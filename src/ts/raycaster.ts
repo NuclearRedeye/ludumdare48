@@ -130,7 +130,9 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     const end: Point = { x: column, y: height };
 
     // 1. Draw the Ceiling..
-    drawLine(context, start, wallStart, 'black');
+    if (wallStart.y > 0) {
+      drawLine(context, start, wallStart, 'black');
+    }
 
     // 2. Draw the Wall...
     drawTexture(context, wallStart, wallEnd, texX, texture);
@@ -139,7 +141,9 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     drawLine(context, wallStart, wallEnd, `rgba(0,0,0,${0.08 * distance})`);
 
     // 4. Draw the floor
-    drawLine(context, wallEnd, end, 'gray');
+    if (wallEnd.y < end.y) {
+      drawLine(context, wallEnd, end, 'gray');
+    }
 
     // Increment the angle ready to cast the next ray.
     rayAngle += increment;
