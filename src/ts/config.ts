@@ -1,2 +1,2 @@
-export const canvasWidth: number = 800;
-export const canvasHeight: number = 600;
+export const canvasWidth: number = 640;
+export const canvasHeight: number = 480;
