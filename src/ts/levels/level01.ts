@@ -2,8 +2,9 @@ import { Level } from '../interfaces/level';
 
 export const level01: Level = {
   entrance: {
-    x: 3,
-    y: 3
+    x: 1,
+    y: 2,
+    angle: 90
   },
   exit: {
     x: 6,

@@ -50,7 +50,7 @@ async function setCurrentLevel(level: Level): Promise<void> {
   }
 
   // Position Player
-  player = new Player(level.entrance.x + 0.5, level.entrance.y + 0.5, 0);
+  player = new Player(level.entrance.x + 0.5, level.entrance.y + 0.5, level.entrance.angle);
 
   // Update Game State
   setCurrentState(states.LOADED);
