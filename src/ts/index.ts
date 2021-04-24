@@ -3,7 +3,11 @@ import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/f
 import { canvasWidth, canvasHeight } from './config.js';
 import { Player } from './objects/player.js';
 import { level01 } from './levels/level01.js';
+import { level02 } from './levels/level02.js';
 import { render } from './raycaster.js';
+import { Level } from './interfaces/level.js';
+import { createTexture } from './resources.js';
+import { getCurrentState, setCurrentState, states } from './state.js';
 
 // Globals
 let canvas: HTMLCanvasElement;
@@ -14,7 +18,7 @@ let pause: boolean = false;
 let debug: boolean = false;
 
 // TODO: Clean this up.
-const player = new Player(3.5, 3.5, 0);
+let player: Player;
 let rotateLeft = false;
 let rotateRight = false;
 let moveForwards = false;
@@ -27,6 +31,31 @@ function update(elapsed: number): void {
   if (rotateRight) player.rotate(70 / elapsed);
 }
 
+let currentLevel: Level;
+
+async function setCurrentLevel(level: Level): Promise<void> {
+  setCurrentState(states.LOADING);
+
+  // Free the current levels resources
+  if (currentLevel) {
+    currentLevel.textures = [];
+  }
+
+  // Update the current level
+  currentLevel = level;
+
+  // Load Assets
+  for (const asset of level.assets) {
+    level.textures.push(await createTexture(asset.url, asset.width, asset.height));
+  }
+
+  // Position Player
+  player = new Player(level.entrance.x + 0.5, level.entrance.y + 0.5, 0);
+
+  // Update Game State
+  setCurrentState(states.LOADED);
+}
+
 // Main Loop
 function onTick(timestamp: number): void {
   if (!pause) {
@@ -36,11 +65,17 @@ function onTick(timestamp: number): void {
     // Clear the Canvas, although no real need.
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Update
-    update(getDelta());
+    switch (getCurrentState()) {
+      case states.LOADING:
+        context.fillStyle = 'white';
+        context.fillText(`Loading`, canvasWidth / 2 - 30, canvasHeight / 2);
+        break;
 
-    // Render
-    render(context, player, level01);
+      case states.LOADED:
+        update(getDelta());
+        render(context, player, currentLevel);
+        break;
+    }
 
     // If 'debug' is enabled, print various stats.
     if (debug) {
@@ -105,6 +140,16 @@ window.onkeyup = (event: KeyboardEvent): void => {
       rotateRight = false;
       break;
 
+    // TODO: Delete before publish
+    case 'Digit1':
+      setCurrentLevel(level01);
+      break;
+
+    // TODO: Delete before publish
+    case 'Digit2':
+      setCurrentLevel(level02);
+      break;
+
     default:
       break;
   }
@@ -115,7 +160,9 @@ window.onload = function (): void {
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
   context = canvas.getContext('2d', { alpha: false }) as CanvasRenderingContext2D;
+  context.imageSmoothingEnabled = false;
   document.body.appendChild(canvas);
   document.body.appendChild(createTextElement('Created by NuclearRedeye'));
   window.requestAnimationFrame(onTick);
+  setCurrentLevel(level01);
 };

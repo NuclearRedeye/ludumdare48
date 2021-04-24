@@ -1,6 +1,7 @@
 import { Point } from './interfaces/point';
 import { Entity } from './interfaces/entity';
 import { Level } from './interfaces/level';
+import { Texture } from './interfaces/texture';
 
 import { degreesToRadians } from './utils/math.js';
 import { canvasWidth, canvasHeight } from './config.js';
@@ -20,6 +21,11 @@ function drawLine(context: CanvasRenderingContext2D, start: Point, end: Point, c
   context.moveTo(start.x, start.y);
   context.lineTo(end.x, end.y);
   context.stroke();
+}
+
+// Function that renders a texture using the drawImage function.
+function drawTexture(context: CanvasRenderingContext2D, start: Point, end: Point, texturePositionX: number, texture: Texture): void {
+  context.drawImage(texture.canvas, texturePositionX, 0, 1, texture.height, start.x, start.y, 1, end.y - start.y);
 }
 
 export function render(context: CanvasRenderingContext2D, entity: Entity, level: Level): void {
@@ -101,6 +107,22 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     // Now work out how high the wall should be...
     const wallHeight = Math.floor(height / distance);
 
+    // Get the ID of the Texture for the wall
+    const texture = level.textures[level.data[mapX][mapY] - 1];
+
+    // Calculate the X coordinate on the wall where the ray hit
+    let wallX = side === 0 ? entity.y + distance * rayDirY : entity.x + distance * rayDirX;
+    wallX -= Math.floor(wallX);
+
+    // Calculate the X coordinate of the texture to use
+    let texX = Math.floor(wallX * texture.width);
+    if (side == 0 && rayDirX > 0) {
+      texX = texture.width - texX - 1;
+    }
+    if (side == 1 && rayDirY < 0) {
+      texX = texture.width - texX - 1;
+    }
+
     // And now we can draw the scanline...
     const start: Point = { x: column, y: 0 };
     const wallStart: Point = { x: column, y: -wallHeight / 2 + halfHeight };
@@ -111,7 +133,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     drawLine(context, start, wallStart, 'black');
 
     // 2. Draw the Wall...
-    drawLine(context, wallStart, wallEnd, 'red');
+    drawTexture(context, wallStart, wallEnd, texX, texture);
 
     // 3. Apply some shading based on distance from player...
     drawLine(context, wallStart, wallEnd, `rgba(0,0,0,${0.08 * distance})`);
