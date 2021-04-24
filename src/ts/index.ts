@@ -2,8 +2,7 @@ import { createTextElement } from './utils/utils.js';
 import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/frametimer.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { Player } from './objects/player.js';
-import { level01 } from './levels/level01.js';
-import { level02 } from './levels/level02.js';
+import { levels } from './levels/index.js';
 import { render } from './raycaster.js';
 import { Level } from './interfaces/level.js';
 import { createTexture } from './resources.js';
@@ -141,13 +140,18 @@ window.onkeyup = (event: KeyboardEvent): void => {
       break;
 
     // TODO: Delete before publish
+    case 'Digit0':
+      setCurrentLevel(levels[0]);
+      break;
+
+    // TODO: Delete before publish
     case 'Digit1':
-      setCurrentLevel(level01);
+      setCurrentLevel(levels[1]);
       break;
 
     // TODO: Delete before publish
     case 'Digit2':
-      setCurrentLevel(level02);
+      setCurrentLevel(levels[2]);
       break;
 
     default:
@@ -164,5 +168,5 @@ window.onload = function (): void {
   document.body.appendChild(canvas);
   document.body.appendChild(createTextElement('Created by NuclearRedeye'));
   window.requestAnimationFrame(onTick);
-  setCurrentLevel(level01);
+  setCurrentLevel(levels[0]);
 };

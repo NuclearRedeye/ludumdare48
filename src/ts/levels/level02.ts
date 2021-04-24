@@ -1,14 +1,16 @@
 import { Level } from '../interfaces/level';
 
 export const level02: Level = {
+  depth: 2,
   entrance: {
     x: 5,
     y: 6,
     angle: 180
   },
   exit: {
-    x: 6,
-    y: 6
+    x: 0,
+    y: 2,
+    angle: 90
   },
   assets: [
     {

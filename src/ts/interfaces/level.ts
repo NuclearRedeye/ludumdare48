@@ -1,11 +1,12 @@
-import { Point } from './point';
-import { Entrance } from './entrance';
+import { Portal } from './portal';
 import { Asset } from './asset';
 import { Texture } from './texture';
 
 export interface Level {
-  entrance: Entrance;
-  exit: Point;
+  depth: number;
+  name?: string;
+  entrance: Portal;
+  exit: Portal;
   assets: Asset[];
   data: number[][];
   textures: Texture[];
