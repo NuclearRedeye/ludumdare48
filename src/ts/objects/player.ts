@@ -20,8 +20,8 @@ export class Player implements Entity {
   move(amount: number): void {
     const playerCos = Math.cos(degreesToRadians(this.angle)) * amount;
     const playerSin = Math.sin(degreesToRadians(this.angle)) * amount;
-    const newX = this.x + playerCos;
-    const newY = this.y + playerSin;
+    const newX = this.x + playerSin;
+    const newY = this.y + playerCos;
     this.x = newX;
     this.y = newY;
 

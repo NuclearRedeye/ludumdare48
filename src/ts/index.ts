@@ -13,6 +13,7 @@ let context: CanvasRenderingContext2D;
 let pause: boolean = false;
 let debug: boolean = false;
 
+// TODO: Clean this up.
 const player = new Player(3.5, 3.5, 0);
 let rotateLeft = false;
 let rotateRight = false;
