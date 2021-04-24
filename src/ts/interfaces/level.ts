@@ -10,4 +10,5 @@ export interface Level {
   assets: Asset[];
   data: number[][];
   textures: Texture[];
+  skybox?: Asset;
 }

@@ -28,6 +28,12 @@ function drawTexture(context: CanvasRenderingContext2D, start: Point, end: Point
   context.drawImage(texture.canvas, texturePositionX, 0, 1, texture.height, start.x, start.y, 1, end.y - start.y);
 }
 
+// Renders the specified texture as a parallax skybox.
+function drawSkybox(context: CanvasRenderingContext2D, start: Point, end: Point, texturePositionX: number, texture: Texture): void {
+  const wallHeight = end.y - start.y;
+  context.drawImage(texture.canvas, texturePositionX, 0, 1, (wallHeight / height) * texture.height, start.x, start.y, 1, wallHeight);
+}
+
 export function render(context: CanvasRenderingContext2D, entity: Entity, level: Level): void {
   // First we calculate the angle of the first, leftmost of the player, ray to cast.
   let rayAngle = entity.angle - halfFieldOfView;
@@ -131,7 +137,11 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
     // 1. Draw the Ceiling..
     if (wallStart.y > 0) {
-      drawLine(context, start, wallStart, 'black');
+      if (level.skybox) {
+        drawSkybox(context, start, wallStart, Math.abs(rayAngle % 360), level.textures[level.textures.length - 1]);
+      } else {
+        drawLine(context, start, wallStart, 'black');
+      }
     }
 
     // 2. Draw the Wall...

@@ -27,6 +27,11 @@ export const level00: Level = {
       height: 16
     }
   ],
+  skybox: {
+    url: 'assets/skybox.debug.01.png',
+    width: 360,
+    height: 60
+  },
   data: [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],

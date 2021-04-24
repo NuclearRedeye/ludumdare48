@@ -48,6 +48,11 @@ async function setCurrentLevel(level: Level): Promise<void> {
     level.textures.push(await createTexture(asset.url, asset.width, asset.height));
   }
 
+  // Load Skybox Asset
+  if (level.skybox) {
+    level.textures.push(await createTexture(level.skybox.url, level.skybox.width, level.skybox.height));
+  }
+
   // Position Player
   player = new Player(level.entrance.x + 0.5, level.entrance.y + 0.5, level.entrance.angle);
 
