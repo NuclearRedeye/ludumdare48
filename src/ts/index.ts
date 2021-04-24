@@ -10,6 +10,14 @@ let context: CanvasRenderingContext2D;
 let pause: boolean = false;
 let debug: boolean = false;
 
+function update(elapsed: number): void {
+  return;
+}
+
+function render(): void {
+  return;
+}
+
 // Main Loop
 function onTick(timestamp: number): void {
   if (!pause) {
@@ -18,6 +26,12 @@ function onTick(timestamp: number): void {
 
     // Clear the Canvas, although no real need.
     context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // Update
+    update(getDelta());
+
+    // Render
+    render();
 
     // If 'debug' is enabled, print various stats.
     if (debug) {
