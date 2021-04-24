@@ -25,8 +25,8 @@ let moveForwards = false;
 let moveBackwards = false;
 
 function update(elapsed: number): void {
-  if (moveForwards) player.move(3.0 / elapsed);
-  if (moveBackwards) player.move(-1.0 / elapsed);
+  if (moveForwards) player.move(3.0 / elapsed, currentLevel);
+  if (moveBackwards) player.move(-1.0 / elapsed, currentLevel);
   if (rotateLeft) player.rotate(-70 / elapsed);
   if (rotateRight) player.rotate(70 / elapsed);
 }

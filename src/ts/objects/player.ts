@@ -1,4 +1,5 @@
 import { Entity } from '../interfaces/entity';
+import { Level } from '../interfaces/level';
 import { degreesToRadians } from '../utils/math.js';
 
 export class Player implements Entity {
@@ -17,14 +18,16 @@ export class Player implements Entity {
     this.angle %= 360;
   }
 
-  move(amount: number): void {
+  move(amount: number, level: Level): void {
     const playerCos = Math.cos(degreesToRadians(this.angle)) * amount;
     const playerSin = Math.sin(degreesToRadians(this.angle)) * amount;
     const newX = this.x + playerSin;
     const newY = this.y + playerCos;
-    this.x = newX;
-    this.y = newY;
 
-    // TODO: Need to add collision detection
+    // Collision test
+    if (level.data[Math.floor(newX)][Math.floor(newY)] == 0) {
+      this.x = newX;
+      this.y = newY;
+    }
   }
 }
