@@ -15,14 +15,14 @@ export const level01: Level = {
   },
   assets: [
     {
-      url: 'assets/wall.brick.01.png',
-      width: 16,
-      height: 16
+      url: 'assets/wall.cave.01.png',
+      width: 64,
+      height: 64
     },
     {
-      url: 'assets/wall.brick.02.png',
-      width: 16,
-      height: 16
+      url: 'assets/wall.cave.02.png',
+      width: 64,
+      height: 64
     },
     {
       url: 'assets/portal.debug.01.png',
