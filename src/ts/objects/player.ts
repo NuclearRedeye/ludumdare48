@@ -31,10 +31,14 @@ export class Player implements Entity {
     const newX = this.x + playerSin;
     const newY = this.y + playerCos;
 
-    // Collision test
-    const cell = getCell(level, Math.floor(newX), Math.floor(newY));
-    if (isSolid(cell) === false) {
+    // Check for a collision on the X Axis
+    const xCell = getCell(level, Math.floor(newX), Math.floor(this.y));
+    if (isSolid(xCell) === false) {
       this.x = newX;
+    }
+    // Check for a collision on the Y Axis
+    const yCell = getCell(level, Math.floor(this.x), Math.floor(newY));
+    if (isSolid(yCell) === false) {
       this.y = newY;
     }
   }
