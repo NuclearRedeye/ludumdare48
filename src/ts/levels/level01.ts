@@ -1,15 +1,15 @@
 import { Level } from '../interfaces/level';
 
 export const level01: Level = {
-  depth: 0,
+  depth: 1,
   entrance: {
     x: 1,
     y: 2,
     angle: 90
   },
   exit: {
-    x: 8,
-    y: 10,
+    x: 7,
+    y: 8,
     angle: 180
   },
   assets: [

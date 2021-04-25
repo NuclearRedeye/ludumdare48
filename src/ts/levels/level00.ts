@@ -11,9 +11,9 @@ export const level00: Level = {
   },
   exit: {
     x: 8,
-    y: 10,
-    angle: 180,
-    destination: 2
+    y: 8,
+    angle: 270,
+    destination: 1
   },
   assets: [
     {
@@ -23,6 +23,11 @@ export const level00: Level = {
     },
     {
       url: 'assets/wall.brick.02.png',
+      width: 16,
+      height: 16
+    },
+    {
+      url: 'assets/portal.debug.02.png',
       width: 16,
       height: 16
     }
@@ -42,7 +47,7 @@ export const level00: Level = {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1, 1, 1, 3, 1]
   ],
   textures: []
 };

@@ -4,9 +4,7 @@ import { canvasWidth, canvasHeight } from './config.js';
 import { Player } from './objects/player.js';
 import { levels } from './levels/index.js';
 import { render } from './raycaster.js';
-import { Level } from './interfaces/level.js';
-import { createTexture } from './resources.js';
-import { getCurrentState, setCurrentState, states } from './state.js';
+import { getCurrentLevel, getCurrentState, getPlayer, setCurrentLevel, states } from './state.js';
 
 // Globals
 let canvas: HTMLCanvasElement;
@@ -17,47 +15,18 @@ let pause: boolean = false;
 let debug: boolean = false;
 
 // TODO: Clean this up.
-let player: Player;
 let rotateLeft = false;
 let rotateRight = false;
 let moveForwards = false;
 let moveBackwards = false;
+let interact = false;
 
 function update(elapsed: number): void {
-  if (moveForwards) player.move(3.0 / elapsed, currentLevel);
-  if (moveBackwards) player.move(-1.0 / elapsed, currentLevel);
-  if (rotateLeft) player.rotate(-70 / elapsed);
-  if (rotateRight) player.rotate(70 / elapsed);
-}
-
-let currentLevel: Level;
-
-async function setCurrentLevel(level: Level): Promise<void> {
-  setCurrentState(states.LOADING);
-
-  // Free the current levels resources
-  if (currentLevel) {
-    currentLevel.textures = [];
-  }
-
-  // Update the current level
-  currentLevel = level;
-
-  // Load Assets
-  for (const asset of level.assets) {
-    level.textures.push(await createTexture(asset.url, asset.width, asset.height));
-  }
-
-  // Load Skybox Asset
-  if (level.skybox) {
-    level.textures.push(await createTexture(level.skybox.url, level.skybox.width, level.skybox.height));
-  }
-
-  // Position Player
-  player = new Player(level.entrance.x + 0.5, level.entrance.y + 0.5, level.entrance.angle);
-
-  // Update Game State
-  setCurrentState(states.LOADED);
+  if (moveForwards) getPlayer().move(3.0 / elapsed, getCurrentLevel());
+  if (moveBackwards) getPlayer().move(-1.0 / elapsed, getCurrentLevel());
+  if (rotateLeft) getPlayer().rotate(-70 / elapsed);
+  if (rotateRight) getPlayer().rotate(70 / elapsed);
+  if (interact) getPlayer().interact(getCurrentLevel());
 }
 
 // Main Loop
@@ -77,7 +46,7 @@ function onTick(timestamp: number): void {
 
       case states.LOADED:
         update(getDelta());
-        render(context, player, currentLevel);
+        render(context, getPlayer(), getCurrentLevel());
         break;
     }
 
@@ -109,6 +78,10 @@ window.onkeydown = (event: KeyboardEvent): void => {
 
     case 'KeyD':
       rotateRight = true;
+      break;
+
+    case 'Space':
+      interact = true;
       break;
 
     default:
@@ -144,19 +117,23 @@ window.onkeyup = (event: KeyboardEvent): void => {
       rotateRight = false;
       break;
 
+    case 'Space':
+      interact = false;
+      break;
+
     // TODO: Delete before publish
     case 'Digit0':
-      setCurrentLevel(levels[0]);
+      setCurrentLevel(levels[0], levels[0].entrance);
       break;
 
     // TODO: Delete before publish
     case 'Digit1':
-      setCurrentLevel(levels[1]);
+      setCurrentLevel(levels[1], levels[1].entrance);
       break;
 
     // TODO: Delete before publish
     case 'Digit2':
-      setCurrentLevel(levels[2]);
+      setCurrentLevel(levels[2], levels[2].entrance);
       break;
 
     default:
@@ -173,5 +150,5 @@ window.onload = function (): void {
   document.body.appendChild(canvas);
   document.body.appendChild(createTextElement('Created by NuclearRedeye'));
   window.requestAnimationFrame(onTick);
-  setCurrentLevel(levels[0]);
+  setCurrentLevel(levels[0], levels[0].entrance);
 };
