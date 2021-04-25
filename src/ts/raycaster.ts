@@ -4,7 +4,7 @@ import { Level } from './interfaces/level';
 import { Texture } from './interfaces/texture';
 import { CastResult } from './interfaces/raycaster';
 
-import { degreesToRadians } from './utils/math.js';
+import { degreesToRadians } from './utils/math-utils.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { isSolid } from './utils/cell-utils.js';
 import { getCell } from './utils/level-utils.js';

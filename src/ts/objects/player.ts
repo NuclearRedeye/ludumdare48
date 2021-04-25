@@ -6,7 +6,7 @@ import { castRay } from '../raycaster.js';
 import { setCurrentLevel } from '../state.js';
 import { isSolid } from '../utils/cell-utils.js';
 import { getCell } from '../utils/level-utils.js';
-import { degreesToRadians } from '../utils/math.js';
+import { degreesToRadians } from '../utils/math-utils.js';
 
 export class Player implements Entity {
   x: number;
