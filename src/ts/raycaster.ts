@@ -107,7 +107,7 @@ export function castRay(point: Point, angle: number, level: Level, max: number =
       };
 
       // Calculate the distance from the start to the point of impact
-      if (side == 0) {
+      if (side === 0) {
         retVal.distance = (mapX - point.x + (1 - stepX) / 2) / rayDirX;
       } else {
         retVal.distance = (mapY - point.y + (1 - stepY) / 2) / rayDirY;
@@ -132,11 +132,16 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     y: entity.y
   };
 
+  const zBuffer = new Array(columns);
+
   // We then iterate over and render each vertical scan line of the view port, incrementing the angle by ( FOV / width )
   for (let column = 0; column < columns; column++) {
     const result = castRay(start, rayAngle, level);
 
     if (result !== undefined) {
+      // Store the distance, before we correct it, as it is used for sprite rendering later.
+      zBuffer[column] = result.distance;
+
       // Fish eye fix
       result.distance = result.distance * Math.cos(degreesToRadians(rayAngle - entity.angle));
 
@@ -152,10 +157,10 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
       // Calculate the X coordinate of the texture to use
       let texX = Math.floor(result.wall * texture.width);
-      if (result.side == 0 && rayDirX > 0) {
+      if (result.side === 0 && rayDirX > 0) {
         texX = texture.width - texX - 1;
       }
-      if (result.side == 1 && rayDirY < 0) {
+      if (result.side === 1 && rayDirY < 0) {
         texX = texture.width - texX - 1;
       }
 
