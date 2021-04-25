@@ -7,7 +7,7 @@ import { CastResult } from './interfaces/raycaster';
 import { degreesToRadians } from './utils/math-utils.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { isSolid } from './utils/cell-utils.js';
-import { getCell } from './utils/level-utils.js';
+import { getCell, getTextureForCell } from './utils/level-utils.js';
 
 const width = canvasWidth; // The width, in pixels, of the screen.
 const height = canvasHeight; // The height, in pixels, of the screen.
@@ -149,18 +149,16 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       const wallHeight = Math.floor(height / result.distance);
 
       // Get the ID of the Texture for the wall
-      // FIXME: Textures should be Indexed properly!
-      const texture = level.textures[result.cell.textureId - 1];
+      const texture = getTextureForCell(level, result.cell);
 
       const rayDirX = Math.sin(degreesToRadians(rayAngle));
       const rayDirY = Math.cos(degreesToRadians(rayAngle));
 
       // Calculate the X coordinate of the texture to use
       let texX = Math.floor(result.wall * texture.width);
-      if (result.side === 0 && rayDirX > 0) {
-        texX = texture.width - texX - 1;
-      }
-      if (result.side === 1 && rayDirY < 0) {
+
+      // Calculate if the texture needs to be rendered flipped.
+      if ((result.side === 0 && rayDirX > 0) || (result.side === 1 && rayDirY < 0)) {
         texX = texture.width - texX - 1;
       }
 
