@@ -84,7 +84,7 @@ export class Player implements Entity {
     }
 
     // Check if the cell is a wall or not.
-    const target = level.data[mapX][mapY];
+    //const target = level.data[mapX][mapY];
 
     // Target is an entrance...
     if (mapX === level.entrance.x && mapY === level.entrance.y) {

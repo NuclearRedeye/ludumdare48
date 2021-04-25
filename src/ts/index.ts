@@ -1,7 +1,6 @@
 import { createTextElement } from './utils/utils.js';
 import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/frametimer.js';
 import { canvasWidth, canvasHeight } from './config.js';
-import { Player } from './objects/player.js';
 import { levels } from './levels/index.js';
 import { render } from './raycaster.js';
 import { getCurrentLevel, getCurrentState, getPlayer, setCurrentLevel, states } from './state.js';
