@@ -23,6 +23,21 @@ export function createWall(textureId: number): Cell {
   return createCell(CellType.WALL, textureId, true);
 }
 
+// Utility function to create an ENTRANCE Cell.
+export function createEntrance(textureId: number): Cell {
+  return createCell(CellType.ENTRANCE, textureId, true);
+}
+
+// Utility function to create an EXIT Cell.
+export function createExit(textureId: number): Cell {
+  return createCell(CellType.EXIT, textureId, true);
+}
+
+// Utility function to determine if the specified cell is solid.
+export function isSolid(cell: Cell): boolean {
+  return cell.solid;
+}
+
 // Utility function to determine if a CELL has an Activators
 export function hasActivators(cell: Cell): boolean {
   return cell.activators.length > 0;
@@ -36,9 +51,4 @@ export function getActivators(cell: Cell): Activator[] {
 // Utility function to add an Activator to the specified CELL
 export function addActivator(cell: Cell, activator: Activator): void {
   cell.activators.push(activator);
-}
-
-// Utility function to determine if the specified cell is solid.
-export function isSolid(cell: Cell): boolean {
-  return cell.solid;
 }

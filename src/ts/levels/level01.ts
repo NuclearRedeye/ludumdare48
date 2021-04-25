@@ -1,5 +1,5 @@
 import { Level } from '../interfaces/level';
-import { createFloor as f, createWall as w } from '../utils/cell-utils.js';
+import { createFloor as f, createWall as w, createEntrance as e, createExit as g } from '../utils/cell-utils.js';
 
 export const level01: Level = {
   depth: 1,
@@ -36,14 +36,14 @@ export const level01: Level = {
     }
   ],
   data: [
-    [w(1), w(1), w(3), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
+    [w(1), w(1), e(3), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(1)],
-    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(4)],
+    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), g(4)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
     [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)]
   ],

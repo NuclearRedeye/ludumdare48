@@ -1,6 +1,7 @@
 import { Entity } from '../interfaces/entity';
 import { Level } from '../interfaces/level';
 
+import { CellType } from '../enums.js';
 import { levels } from '../levels/index.js';
 import { castRay } from '../raycaster.js';
 import { setCurrentLevel } from '../state.js';
@@ -41,8 +42,8 @@ export class Player implements Entity {
   interact(level: Level): void {
     const result = castRay({ x: this.x, y: this.y }, this.angle, level);
     if (result != undefined) {
-      // Target is an entrance...
-      if (result.x === level.entrance.x && result.y === level.entrance.y) {
+      // Target is an entraance...
+      if (result.cell.type === CellType.ENTRANCE && result.distance < 1) {
         // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
         setTimeout(() => {
           const newLevel = level.entrance.destination ? levels[level.entrance.destination] : levels[level.depth - 1];
@@ -51,7 +52,7 @@ export class Player implements Entity {
       }
 
       // Target is an exit...
-      if (result.x === level.exit.x && result.y === level.exit.y) {
+      if (result.cell.type === CellType.EXIT && result.distance < 1) {
         // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
         setTimeout(() => {
           const newLevel = level.exit.destination ? levels[level.exit.destination] : levels[level.depth + 1];
