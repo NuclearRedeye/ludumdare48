@@ -1,6 +1,7 @@
 import { Portal } from './portal';
 import { Asset } from './asset';
 import { Texture } from './texture';
+import { Cell } from './cell';
 
 export interface Level {
   depth: number;
@@ -8,7 +9,7 @@ export interface Level {
   entrance: Portal;
   exit: Portal;
   assets: Asset[];
-  data: number[][];
+  data: Cell[][];
   textures: Texture[];
   skybox?: Asset;
 }
