@@ -5,4 +5,5 @@ export interface Entity {
   dy: number;
   cx: number;
   cy: number;
+  update(elapsed: number): void;
 }

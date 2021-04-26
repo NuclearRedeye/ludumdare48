@@ -26,6 +26,10 @@ export class Enemy implements Movable, Sprite {
     this.scale = scale;
   }
 
+  // eslint-disable-next-line
+  update(elapsed: number): void {
+  }
+
   rotate(amount: number): void {
     // Rotate Player
     const dx = this.dx;

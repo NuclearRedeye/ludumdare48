@@ -8,6 +8,7 @@ import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
 import { isSolid } from './utils/cell-utils.js';
 import { getCell, getTextureById, getTextureForCell } from './utils/level-utils.js';
+import { getAnimationFrame } from './utils/fps-utils.js';
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
@@ -304,14 +305,21 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       // - It's not too far away or hidden behind another solid that has already been rendered.
       if (transformY > 0 && column > 0 && column < width && transformY < zBuffer[column]) {
         // FIXME: This is supposed to make sure that when the texture is partially offscreen, we adjust the x offset for the texture acordingly.
-        const texXOffset = Math.floor(((column - drawStartX) * texture.width) / spriteHeight);
+        const texXOffset = Math.floor(((column - drawStartX) * texture.height) / spriteHeight);
+
+        // If the object is animated, then calculate the offset for the frame within the texture.
+        let texXAnimationOffset = 0;
+        if (texture.width > texture.height) {
+          const frame = getAnimationFrame();
+          texXAnimationOffset = frame * texture.height;
+        }
 
         // Make sure the sprite sits on the floor, rather than floating in the air.
         const drawStartYOffset = Math.floor(256 / transformY) - spriteHeight / 2;
 
         // The slice of the texture that we want to render to the framebuffer.
         const sourceRectangle: Rectangle = {
-          x: texX + texXOffset,
+          x: texX + texXOffset + texXAnimationOffset,
           y: 0,
           width: 1,
           height: texture.height

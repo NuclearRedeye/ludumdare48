@@ -20,4 +20,8 @@ export class Object implements Sprite {
     this.textureId = textureId;
     this.scale = scale;
   }
+
+  // eslint-disable-next-line
+  update(elapsed: number): void {
+  }
 }

@@ -28,6 +28,10 @@ export class Player implements Movable {
     this.scale = 1.0;
   }
 
+  // eslint-disable-next-line
+  update(elapsed: number): void {
+  }
+
   rotate(amount: number): void {
     // Rotate Player
     const dx = this.dx;

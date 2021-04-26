@@ -21,3 +21,7 @@ export function getDelta(): number {
 export function getCurrentFramesPerSecond(): number {
   return 1000 / (current - previous);
 }
+
+export function getAnimationFrame(): number {
+  return Math.floor(((current / 1000) * 4) % 8);
+}

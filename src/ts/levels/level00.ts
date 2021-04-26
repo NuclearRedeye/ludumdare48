@@ -48,8 +48,8 @@ export const level00: Level = {
       height: 16
     },
     {
-      url: 'assets/entity.debug.02.png',
-      width: 16,
+      url: 'assets/object.coin.01.png',
+      width: 128,
       height: 16
     }
   ],
