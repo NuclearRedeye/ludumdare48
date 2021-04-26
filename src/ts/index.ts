@@ -4,6 +4,8 @@ import { canvasWidth, canvasHeight } from './config.js';
 import { levels } from './levels/index.js';
 import { render } from './raycaster.js';
 import { getCurrentLevel, getCurrentState, getPlayer, setCurrentLevel, states } from './state.js';
+import { checkEntityCollision } from './utils/collision-utils.js';
+import { getLevelName } from './utils/level-utils.js';
 
 // Globals
 let canvas: HTMLCanvasElement;
@@ -20,15 +22,29 @@ let moveForwards = false;
 let moveBackwards = false;
 let interact = false;
 
+let score = 0;
 const rotationSpeed = 1.0;
 const movementSpeed = 2.0;
 
 function update(elapsed: number): void {
-  if (moveForwards) getPlayer().move(movementSpeed / elapsed, getCurrentLevel());
-  if (moveBackwards) getPlayer().move(-(movementSpeed / 2) / elapsed, getCurrentLevel());
-  if (rotateLeft) getPlayer().rotate(-rotationSpeed / elapsed);
-  if (rotateRight) getPlayer().rotate(rotationSpeed / elapsed);
-  if (interact) getPlayer().interact(getCurrentLevel());
+  const player = getPlayer();
+  if (moveForwards) player.move(movementSpeed / elapsed, getCurrentLevel());
+  if (moveBackwards) player.move(-(movementSpeed / 2) / elapsed, getCurrentLevel());
+  if (rotateLeft) player.rotate(-rotationSpeed / elapsed);
+  if (rotateRight) player.rotate(rotationSpeed / elapsed);
+  if (interact) player.interact(getCurrentLevel());
+
+  // Check Collisions, nothing moves at the moment so for now just player vs all objects...
+  const level = getCurrentLevel();
+  for (const object of level.objects) {
+    if (object.active === false) {
+      continue;
+    }
+    if (checkEntityCollision(player, object)) {
+      object.active = false;
+      score += 100;
+    }
+  }
 }
 
 // Main Loop
@@ -37,18 +53,28 @@ function onTick(timestamp: number): void {
     // Mark the timer
     Mark(timestamp);
 
-    // Clear the Canvas, although no real need.
+    // Clear the Canvas, although no real need as we will be drawing over every pixel.
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
     switch (getCurrentState()) {
       case states.LOADING:
+        context.fillStyle = 'black';
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
+        context.font = '24px serif';
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
         context.fillStyle = 'white';
-        context.fillText(`Loading`, canvasWidth / 2 - 30, canvasHeight / 2);
+        context.fillText(`${getLevelName(getCurrentLevel())}`, canvasWidth / 2, canvasHeight / 2);
         break;
 
       case states.LOADED:
         update(getDelta());
         render(context, getPlayer(), getCurrentLevel());
+        context.font = '24px serif';
+        context.textBaseline = 'top';
+        context.fillStyle = 'white';
+        context.textAlign = 'end';
+        context.fillText(`${score}`, canvasWidth - 10, 10);
         break;
     }
 

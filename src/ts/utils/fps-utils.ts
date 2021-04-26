@@ -2,6 +2,11 @@ let start: number;
 let current: number;
 let previous: number;
 
+// Pauses for the desired amount of time.
+export function sleep(miliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, miliseconds));
+}
+
 export function Mark(timestamp: number): void {
   if (start === undefined) {
     start = timestamp;

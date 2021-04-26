@@ -7,8 +7,10 @@ export class Object implements Sprite {
   dy: number;
   cx: number;
   cy: number;
+  active: boolean;
   textureId: number;
   scale: number;
+  radius: number;
 
   constructor(x: number, y: number, textureId: number, scale: number = 1.0) {
     this.x = x;
@@ -17,8 +19,10 @@ export class Object implements Sprite {
     this.dy = 0.0;
     this.cx = 0.0;
     this.cy = 0.66;
+    this.active = true;
     this.textureId = textureId;
     this.scale = scale;
+    this.radius = 1.0 * scale;
   }
 
   // eslint-disable-next-line

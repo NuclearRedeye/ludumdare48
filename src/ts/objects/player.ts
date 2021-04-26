@@ -16,7 +16,9 @@ export class Player implements Movable {
   dy: number;
   cx: number;
   cy: number;
+  active: boolean;
   scale: number;
+  radius: number;
 
   constructor(x: number, y: number) {
     this.x = x;
@@ -25,7 +27,9 @@ export class Player implements Movable {
     this.dy = 0.0;
     this.cx = 0.0;
     this.cy = 0.66;
+    this.active = true;
     this.scale = 1.0;
+    this.radius = 0.5;
   }
 
   // eslint-disable-next-line

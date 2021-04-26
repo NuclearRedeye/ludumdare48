@@ -255,6 +255,13 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
   for (let i = 0; i < sprites.length; i++) {
     // For ease...
     const sprite = sprites[i];
+
+    // Don't bother on non-active sprites.
+    if (sprite.active === false) {
+      continue;
+    }
+
+    // Get the texture for the sprite
     const texture = getTextureById(level, sprite.textureId);
 
     // Calculate the sprites position

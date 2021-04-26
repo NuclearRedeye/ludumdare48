@@ -12,8 +12,10 @@ export class Enemy implements Movable, Sprite {
   dy: number;
   cx: number;
   cy: number;
+  active: boolean;
   textureId: number;
   scale: number;
+  radius: number;
 
   constructor(x: number, y: number, textureId: number, scale: number = 1.0) {
     this.x = x;
@@ -22,8 +24,10 @@ export class Enemy implements Movable, Sprite {
     this.dy = 0.0;
     this.cx = 0.0;
     this.cy = 0.66;
+    this.active = true;
     this.textureId = textureId;
     this.scale = scale;
+    this.radius = 0.5;
   }
 
   // eslint-disable-next-line

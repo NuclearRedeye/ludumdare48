@@ -17,3 +17,7 @@ export function getTextureForCell(level: Level, cell: Cell): Texture {
 export function getTextureById(level: Level, id: number): Texture {
   return level.textures[id - 1];
 }
+
+export function getLevelName(level: Level): string {
+  return level.name ? level.name : `Level ${level.depth}`;
+}

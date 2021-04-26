@@ -5,5 +5,7 @@ export interface Entity {
   dy: number;
   cx: number;
   cy: number;
+  active: boolean;
+  radius: number;
   update(elapsed: number): void;
 }
