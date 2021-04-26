@@ -1,60 +1,18 @@
-import { Point } from './interfaces/point';
 import { Entity } from './interfaces/entity';
 import { Level } from './interfaces/level';
-import { Texture } from './interfaces/texture';
 import { Rectangle } from './interfaces/rectangle';
 import { CastResult } from './interfaces/raycaster';
 
 import { canvasWidth, canvasHeight } from './config.js';
+import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
 import { isSolid } from './utils/cell-utils.js';
 import { getCell, getTextureForCell } from './utils/level-utils.js';
 
+// FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
 const height = canvasHeight; // The height, in pixels, of the screen.
 const halfHeight = height / 2; // Half the height of the screen, in pixels.
 const columns = width; // The number of columns in the viewport, or basically the number or Rays to cast.
-
-// Draw a line of the specified colour on the target canvas.
-function drawLine(context: CanvasRenderingContext2D, start: Point, end: Point, colour: string): void {
-  context.strokeStyle = colour;
-  context.beginPath();
-  context.moveTo(start.x, start.y);
-  context.lineTo(end.x, end.y);
-  context.stroke();
-}
-
-// Draw a rectangle of the specified tint on the target canvas.
-function drawTint(context: CanvasRenderingContext2D, destination: Rectangle, tint: number) {
-  let colour = Math.round(60 / tint);
-  colour = 60 - colour;
-  if (colour < 0) {
-    colour = 0;
-  }
-  tint = 1 - tint;
-  context.fillStyle = `rgba(${colour},${colour},${colour},${tint})`;
-  context.fillRect(destination.x, destination.y, destination.width, destination.height);
-}
-
-// Function that renders the specified Gradient to the target canvas.
-function drawGradient(context: CanvasRenderingContext2D, start: Point, end: Point, startColour: string, endColour: string): void {
-  const x = width / 2;
-  const gradient = context.createLinearGradient(x, start.y, x, end.y);
-  gradient.addColorStop(0, startColour);
-  gradient.addColorStop(1, endColour);
-  context.fillStyle = gradient;
-  context.fillRect(start.x, start.y, end.x, end.y);
-}
-
-// Function that renders a texture using the drawImage function.
-function drawTexture(context: CanvasRenderingContext2D, texture: Texture, source: Rectangle, destination: Rectangle): void {
-  context.drawImage(texture.canvas, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
-}
-
-// Renders the specified texture as a parallax skybox.
-function drawSkybox(context: CanvasRenderingContext2D, start: Point, end: Point, texturePositionX: number, texture: Texture): void {
-  const wallHeight = end.y - start.y;
-  context.drawImage(texture.canvas, texturePositionX, 0, 1, (wallHeight / height) * texture.height, start.x, start.y, 1, wallHeight);
-}
 
 // Derived from https://lodev.org/cgtutor/raycasting.html.
 // Casts a ray from the specified point at the specified angle and returns the first Wall the ray impacts.
