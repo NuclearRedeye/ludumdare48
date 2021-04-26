@@ -3,6 +3,7 @@ import { Portal } from './interfaces/portal';
 
 import { Player } from './objects/player.js';
 import { createTexture } from './resources.js';
+import { degreesToRadians } from './utils/math-utils.js';
 
 export enum states {
   STARTING,
@@ -45,8 +46,9 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
     level.textures.push(await createTexture(level.skybox.url, level.skybox.width, level.skybox.height));
   }
 
-  // Position Player
-  player = new Player(start.x + 0.5, start.y + 0.5, start.angle);
+  // Initialise and position Player
+  player = new Player(start.x + 0.5, start.y + 0.5);
+  player.rotate(degreesToRadians(start.angle));
 
   // Update Game State
   setCurrentState(states.LOADED);

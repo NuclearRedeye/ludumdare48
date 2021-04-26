@@ -3,7 +3,7 @@ import { Level } from '../interfaces/level';
 import { Texture } from '../interfaces/texture';
 
 export function getCell(level: Level, x: number, y: number): Cell {
-  return level.data[x][y];
+  return level.data[y][x];
 }
 
 export function getTextureForCell(level: Level, cell: Cell): Texture {

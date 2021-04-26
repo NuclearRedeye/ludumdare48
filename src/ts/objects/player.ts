@@ -7,29 +7,40 @@ import { castRay } from '../raycaster.js';
 import { setCurrentLevel } from '../state.js';
 import { isSolid } from '../utils/cell-utils.js';
 import { getCell } from '../utils/level-utils.js';
-import { degreesToRadians } from '../utils/math-utils.js';
+import { canvasWidth } from '../config.js';
 
 export class Player implements Entity {
   x: number;
   y: number;
-  angle: number;
+  dx: number;
+  dy: number;
+  cx: number;
+  cy: number;
 
-  constructor(x: number, y: number, angle: number) {
+  constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
-    this.angle = angle;
+    this.dx = 1.0;
+    this.dy = 0.0;
+    this.cx = 0.0;
+    this.cy = 0.66;
   }
 
   rotate(amount: number): void {
-    this.angle += amount;
-    this.angle %= 360;
+    // Rotate Player
+    const dx = this.dx;
+    this.dx = this.dx * Math.cos(amount) - this.dy * Math.sin(amount);
+    this.dy = dx * Math.sin(amount) + this.dy * Math.cos(amount);
+
+    // Rotate Camera
+    const cx = this.cx;
+    this.cx = this.cx * Math.cos(amount) - this.cy * Math.sin(amount);
+    this.cy = cx * Math.sin(amount) + this.cy * Math.cos(amount);
   }
 
   move(amount: number, level: Level): void {
-    const playerCos = Math.cos(degreesToRadians(this.angle)) * amount;
-    const playerSin = Math.sin(degreesToRadians(this.angle)) * amount;
-    const newX = this.x + playerSin;
-    const newY = this.y + playerCos;
+    const newX = this.x + this.dx * amount;
+    const newY = this.y + this.dy * amount;
 
     // Check for a collision on the X Axis
     const xCell = getCell(level, Math.floor(newX), Math.floor(this.y));
@@ -44,7 +55,7 @@ export class Player implements Entity {
   }
 
   interact(level: Level): void {
-    const result = castRay({ x: this.x, y: this.y }, this.angle, level);
+    const result = castRay(canvasWidth / 2, this, level);
     if (result != undefined) {
       // Target is an entraance...
       if (result.cell.type === CellType.ENTRANCE && result.distance < 1) {

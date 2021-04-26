@@ -2,9 +2,9 @@ import { Point } from './interfaces/point';
 import { Entity } from './interfaces/entity';
 import { Level } from './interfaces/level';
 import { Texture } from './interfaces/texture';
+import { Rectangle } from './interfaces/rectangle';
 import { CastResult } from './interfaces/raycaster';
 
-import { degreesToRadians } from './utils/math-utils.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { isSolid } from './utils/cell-utils.js';
 import { getCell, getTextureForCell } from './utils/level-utils.js';
@@ -13,9 +13,6 @@ const width = canvasWidth; // The width, in pixels, of the screen.
 const height = canvasHeight; // The height, in pixels, of the screen.
 const halfHeight = height / 2; // Half the height of the screen, in pixels.
 const columns = width; // The number of columns in the viewport, or basically the number or Rays to cast.
-const fieldOfView = 60; // The field of view, in degrees, of the camera.
-const halfFieldOfView = fieldOfView / 2; // Half the field of view.
-const increment = fieldOfView / columns; // The step to add for each ray cast.
 
 // Draw a line of the specified colour on the target canvas.
 function drawLine(context: CanvasRenderingContext2D, start: Point, end: Point, colour: string): void {
@@ -26,9 +23,31 @@ function drawLine(context: CanvasRenderingContext2D, start: Point, end: Point, c
   context.stroke();
 }
 
+// Draw a rectangle of the specified tint on the target canvas.
+function drawTint(context: CanvasRenderingContext2D, destination: Rectangle, tint: number) {
+  let colour = Math.round(60 / tint);
+  colour = 60 - colour;
+  if (colour < 0) {
+    colour = 0;
+  }
+  tint = 1 - tint;
+  context.fillStyle = `rgba(${colour},${colour},${colour},${tint})`;
+  context.fillRect(destination.x, destination.y, destination.width, destination.height);
+}
+
+// Function that renders the specified Gradient to the target canvas.
+function drawGradient(context: CanvasRenderingContext2D, start: Point, end: Point, startColour: string, endColour: string): void {
+  const x = width / 2;
+  const gradient = context.createLinearGradient(x, start.y, x, end.y);
+  gradient.addColorStop(0, startColour);
+  gradient.addColorStop(1, endColour);
+  context.fillStyle = gradient;
+  context.fillRect(start.x, start.y, end.x, end.y);
+}
+
 // Function that renders a texture using the drawImage function.
-function drawTexture(context: CanvasRenderingContext2D, start: Point, end: Point, texturePositionX: number, texture: Texture): void {
-  context.drawImage(texture.canvas, texturePositionX, 0, 1, texture.height, start.x, start.y, 1, end.y - start.y);
+function drawTexture(context: CanvasRenderingContext2D, texture: Texture, source: Rectangle, destination: Rectangle): void {
+  context.drawImage(texture.canvas, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
 }
 
 // Renders the specified texture as a parallax skybox.
@@ -37,158 +56,152 @@ function drawSkybox(context: CanvasRenderingContext2D, start: Point, end: Point,
   context.drawImage(texture.canvas, texturePositionX, 0, 1, (wallHeight / height) * texture.height, start.x, start.y, 1, wallHeight);
 }
 
-// Casts a ray from the specified point at the specified angle and returns the first Wall the ray impacts
-export function castRay(point: Point, angle: number, level: Level, max: number = 50): CastResult | undefined {
-  // The ray starts from the entities current cell.
-  let mapX: number = Math.floor(point.x);
-  let mapY: number = Math.floor(point.y);
+// Derived from https://lodev.org/cgtutor/raycasting.html.
+// Casts a ray from the specified point at the specified angle and returns the first Wall the ray impacts.
+export function castRay(column: number, entity: Entity, level: Level, maxDepth: number = 50): CastResult | undefined {
+  const camera = (2 * column) / width - 1;
+  const rayDirectionX = entity.dx + entity.cx * camera;
+  const rayDirectionY = entity.dy + entity.cy * camera;
 
-  // The X and Y direction of the Ray
-  const rayDirX = Math.sin(degreesToRadians(angle));
-  const rayDirY = Math.cos(degreesToRadians(angle));
+  // Calculate the current Cell of the map that we are in.
+  let mapX = Math.floor(entity.x);
+  let mapY = Math.floor(entity.y);
 
-  // The distance from the ray's starting position to the first wall on both the x and y directions.
-  let sideDistX: number;
-  let sideDistY: number;
+  // Flags to track if the next check should be in the X or Y direction when using DDA.
+  let stepX;
+  let stepY;
 
-  // The distance from the first wall, to the next wall in both the x and y directions
-  const deltaDistX = Math.abs(1 / rayDirX);
-  const deltaDistY = Math.abs(1 / rayDirY);
+  // Calculate the distance from one cell boundry to the next boundry in the X or Y direction.
+  const deltaDistanceX = Math.abs(1 / rayDirectionX);
+  const deltaDistanceY = Math.abs(1 / rayDirectionY);
 
-  // What direction to increment next
-  let stepX: number;
-  let stepY: number;
+  // Calculate the distance from the entity's origin to the first boundry in the X or Y direction.
+  let sideDistanceX;
+  let sideDistanceY;
 
-  // Calculate the initial step for the X axis
-  if (rayDirX < 0) {
+  // Calculate the distance to the first side based on the ray's direction on the X Axis.
+  if (rayDirectionX < 0) {
     stepX = -1;
-    sideDistX = (point.x - mapX) * deltaDistX;
+    sideDistanceX = (entity.x - mapX) * deltaDistanceX;
   } else {
     stepX = 1;
-    sideDistX = (mapX + 1.0 - point.x) * deltaDistX;
+    sideDistanceX = (mapX + 1 - entity.x) * deltaDistanceX;
   }
 
-  // Calculate the initial step for the Y axis
-  if (rayDirY < 0) {
+  // Calculate the distance to the first side based on the ray's direction on the Y Axis.
+  if (rayDirectionY < 0) {
     stepY = -1;
-    sideDistY = (point.y - mapY) * deltaDistY;
+    sideDistanceY = (entity.y - mapY) * deltaDistanceY;
   } else {
     stepY = 1;
-    sideDistY = (mapY + 1.0 - point.y) * deltaDistY;
+    sideDistanceY = (mapY + 1 - entity.y) * deltaDistanceY;
   }
 
-  // Tracks if the wall the ray hits was on the X or the Y axis.
-  let side: number = 0;
+  // Count the number of DDA steps executed, so that we can break if the maximum depth is reached.
+  let count = 0;
 
-  // Use DDA to step through each cell the ray hits to see if it is a wall or not.
-  let step = 0;
-  while (step++ < max) {
-    // Find the next cell in either X or Y direction.
-    if (sideDistX < sideDistY) {
-      sideDistX += deltaDistX;
+  // Tracks if the DDA step was in the X or the Y axis.
+  let side;
+
+  // Use DDA to step through all the cell boundries the ray touches.
+  while (count++ < maxDepth) {
+    // Step in either the X or the Y direction, moving the X and Y position to the next cell boundry.
+    if (sideDistanceX < sideDistanceY) {
+      sideDistanceX += deltaDistanceX;
       mapX += stepX;
       side = 0;
     } else {
-      sideDistY += deltaDistY;
+      sideDistanceY += deltaDistanceY;
       mapY += stepY;
       side = 1;
     }
 
-    // Check if the cell is a wall or not.
+    // Get the Cell that the ray has hit.
     const cell = getCell(level, mapX, mapY);
+
+    // Check if the Cell is solid.
     if (isSolid(cell)) {
-      const retVal: CastResult = {
+      // Calculate the distance from the ray's origin to the solid that was hit.
+      const distance = side === 0 ? Math.abs((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) : Math.abs((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY);
+
+      // Calculate the point on the wall that the ray hit
+      let wall = side === 0 ? entity.y + ((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) * rayDirectionY : entity.x + ((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY) * rayDirectionX;
+      wall -= Math.floor(wall);
+
+      return {
         x: mapX,
         y: mapY,
         cell,
         side,
-        distance: 0,
-        wall: 0
+        wall,
+        distance: distance
       };
-
-      // Calculate the distance from the start to the point of impact
-      if (side === 0) {
-        retVal.distance = (mapX - point.x + (1 - stepX) / 2) / rayDirX;
-      } else {
-        retVal.distance = (mapY - point.y + (1 - stepY) / 2) / rayDirY;
-      }
-
-      // Calculate the specific coordinate on the wall where the ray hit
-      retVal.wall = side === 0 ? point.y + retVal.distance * rayDirY : point.x + retVal.distance * rayDirX;
-      retVal.wall -= Math.floor(retVal.wall);
-
-      return retVal;
     }
   }
-
   return undefined;
 }
 
+// Function to render the specified level, from the perspective of the specified entity to the target canvas
 export function render(context: CanvasRenderingContext2D, entity: Entity, level: Level): void {
-  // First we calculate the angle of the first, leftmost of the player, ray to cast.
-  let rayAngle = entity.angle - halfFieldOfView;
-  const start: Point = {
-    x: entity.x,
-    y: entity.y
-  };
-
   const zBuffer = new Array(columns);
 
-  // We then iterate over and render each vertical scan line of the view port, incrementing the angle by ( FOV / width )
-  for (let column = 0; column < columns; column++) {
-    const result = castRay(start, rayAngle, level);
+  // Draw the Ceiling
+  drawGradient(context, { x: 0, y: 0 }, { x: width, y: halfHeight }, 'grey', 'black');
 
+  // Draw the Floor
+  drawGradient(context, { x: 0, y: halfHeight }, { x: width, y: height }, 'black', 'green');
+
+  // Draw the Walls
+  for (let column = 0; column < width; column++) {
+    // Get the first solid cell this ray hits.
+    const result = castRay(column, entity, level);
+
+    // FIXME: Should draw something when no solid is found within the maximum range.
     if (result !== undefined) {
-      // Store the distance, before we correct it, as it is used for sprite rendering later.
+      // Stick the distance into the Depth Buffer
       zBuffer[column] = result.distance;
 
-      // Fish eye fix
-      result.distance = result.distance * Math.cos(degreesToRadians(rayAngle - entity.angle));
+      // Calculate the height the wall should be rendered at from the distance from the entity.
+      const wallHeight = Math.abs(Math.floor(height / result.distance));
 
-      // Now work out how high the wall should be...
-      const wallHeight = Math.floor(height / result.distance);
+      // Calculate the position on the Y axis of the viewport to start drawing the wall from.
+      const wallY = -wallHeight / 2 + height / 2;
 
-      // Get the ID of the Texture for the wall
+      // Get the texture for the solid cell.
       const texture = getTextureForCell(level, result.cell);
 
-      const rayDirX = Math.sin(degreesToRadians(rayAngle));
-      const rayDirY = Math.cos(degreesToRadians(rayAngle));
+      // Calculate the X offset in the Texture for the slice that needs to be rendered.
+      const wallX = Math.floor(result.wall * texture.width);
 
-      // Calculate the X coordinate of the texture to use
-      let texX = Math.floor(result.wall * texture.width);
-
-      // Calculate if the texture needs to be rendered flipped.
-      if ((result.side === 0 && rayDirX > 0) || (result.side === 1 && rayDirY < 0)) {
-        texX = texture.width - texX - 1;
+      // FIXME: Any South or West facing texture is falling into a trap here.
+      /*if (result.side === 0 && entity.dy < 0) {
+        wallX = texture.width - wallX - 1;
       }
+      if (result.side === 1 && entity.dx > 0) {
+        wallX = texture.width - wallX - 1;
+      }*/
 
-      // And now we can draw the scanline...
-      const start: Point = { x: column, y: 0 };
-      const wallStart: Point = { x: column, y: -wallHeight / 2 + halfHeight };
-      const wallEnd: Point = { x: column, y: wallHeight / 2 + halfHeight };
-      const end: Point = { x: column, y: height };
+      // The slice of the texture that we want to render to the framebuffer.
+      const sourceRectangle: Rectangle = {
+        x: wallX,
+        y: 0,
+        width: 1,
+        height: texture.height
+      };
 
-      // 1. Draw the Ceiling..
-      if (wallStart.y > 0) {
-        if (level.skybox) {
-          drawSkybox(context, start, wallStart, Math.abs(rayAngle % 360), level.textures[level.textures.length - 1]);
-        } else {
-          drawLine(context, start, wallStart, 'black');
-        }
-      }
+      // The location to render that texture to in the framebuffer.
+      const destinationRectange: Rectangle = {
+        x: column,
+        y: wallY,
+        width: 1,
+        height: wallHeight
+      };
 
-      // 2. Draw the Wall...
-      drawTexture(context, wallStart, wallEnd, texX, texture);
+      // Draw the wall to the framebuffer.
+      drawTexture(context, texture, sourceRectangle, destinationRectange);
 
-      // 3. Apply some shading based on distance from player...
-      drawLine(context, wallStart, wallEnd, `rgba(0,0,0,${0.08 * result.distance})`);
-
-      // 4. Draw the floor
-      if (wallEnd.y < end.y) {
-        drawLine(context, wallEnd, end, 'gray');
-      }
+      // Apply a darkened tint to the wall, based on its distance from the entity.
+      drawTint(context, destinationRectange, (wallHeight * 1.6) / height);
     }
-    // Increment the angle ready to cast the next ray.
-    rayAngle += increment;
   }
 }

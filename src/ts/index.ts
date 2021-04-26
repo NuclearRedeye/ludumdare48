@@ -20,11 +20,14 @@ let moveForwards = false;
 let moveBackwards = false;
 let interact = false;
 
+const rotationSpeed = 1.0;
+const movementSpeed = 2.0;
+
 function update(elapsed: number): void {
-  if (moveForwards) getPlayer().move(3.0 / elapsed, getCurrentLevel());
-  if (moveBackwards) getPlayer().move(-1.0 / elapsed, getCurrentLevel());
-  if (rotateLeft) getPlayer().rotate(-70 / elapsed);
-  if (rotateRight) getPlayer().rotate(70 / elapsed);
+  if (moveForwards) getPlayer().move(movementSpeed / elapsed, getCurrentLevel());
+  if (moveBackwards) getPlayer().move(-(movementSpeed / 2) / elapsed, getCurrentLevel());
+  if (rotateLeft) getPlayer().rotate(-rotationSpeed / elapsed);
+  if (rotateRight) getPlayer().rotate(rotationSpeed / elapsed);
   if (interact) getPlayer().interact(getCurrentLevel());
 }
 

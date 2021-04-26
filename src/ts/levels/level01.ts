@@ -4,13 +4,13 @@ import { createFloor as f, createWall as w, createEntrance as e, createExit as g
 export const level01: Level = {
   depth: 1,
   entrance: {
-    x: 1,
-    y: 2,
+    x: 2,
+    y: 1,
     angle: 90
   },
   exit: {
-    x: 7,
-    y: 8,
+    x: 8,
+    y: 7,
     angle: 180
   },
   assets: [

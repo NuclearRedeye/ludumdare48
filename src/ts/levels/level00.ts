@@ -6,7 +6,7 @@ export const level00: Level = {
   name: 'Surface',
   entrance: {
     x: 1,
-    y: 2,
+    y: 1,
     angle: 90
   },
   exit: {
