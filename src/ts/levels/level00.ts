@@ -30,6 +30,11 @@ export const level00: Level = {
       url: 'assets/floor.grass.01.png',
       width: 16,
       height: 16
+    },
+    {
+      url: 'assets/exit.grass.02.png',
+      width: 16,
+      height: 16
     }
   ],
   floor: 3,
@@ -42,7 +47,7 @@ export const level00: Level = {
     [w(1), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), w(1)],
     [w(1), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), w(1)],
     [w(1), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), w(1)],
-    [w(1), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), w(1)],
+    [w(1), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(4), w(1)],
     [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), g(2), w(1)]
   ],
   objects: [],

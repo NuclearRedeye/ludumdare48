@@ -150,8 +150,14 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
         const cellX = Math.floor(floorX);
         const cellY = Math.floor(floorY);
 
-        // FIXME: Should get the texture for the specific floor tile
-        const texture = getTextureById(level, level.floor);
+        // FIXME: This works, but not sure it is correct.
+        let texture = getTextureById(level, level.floor);
+        if (!Number.isNaN(cellX) || !Number.isNaN(cellY) || isFinite(cellX) || isFinite(cellY)) {
+          const cell = getCell(level, cellX, cellY);
+          if (cell !== undefined) {
+            texture = getTextureById(level, cell.textureId);
+          }
+        }
 
         // get the texture coordinate from the fractional part
         const tx = Math.floor(texture.width * (floorX - cellX)) & (texture.width - 1);
