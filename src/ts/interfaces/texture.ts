@@ -4,4 +4,5 @@ export interface Texture {
   height: number; // The height, in pixels, of the Texture.
   image: HTMLImageElement; // Handle to the DOM image element for this Texture.
   canvas: HTMLCanvasElement; // Handle to the Offscreen Canvas for this Texture data.
+  buffer: Uint8ClampedArray; // Raw pixel data for the Texture.
 }

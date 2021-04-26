@@ -6,7 +6,7 @@ import { CastResult } from './interfaces/raycaster';
 import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
 import { isSolid } from './utils/cell-utils.js';
-import { getCell, getTextureForCell } from './utils/level-utils.js';
+import { getCell, getTextureById, getTextureForCell } from './utils/level-utils.js';
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
@@ -78,7 +78,7 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
     const cell = getCell(level, mapX, mapY);
 
     // Check if the Cell is solid.
-    if (isSolid(cell)) {
+    if (cell !== undefined && isSolid(cell)) {
       // Calculate the distance from the ray's origin to the solid that was hit.
       const distance = side === 0 ? Math.abs((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) : Math.abs((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY);
 
@@ -104,10 +104,84 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
   const zBuffer = new Array(columns);
 
   // Draw the Ceiling
-  drawGradient(context, { x: 0, y: 0 }, { x: width, y: halfHeight }, 'grey', 'black');
+  if (level.ceiling === undefined) {
+    drawGradient(context, { x: 0, y: 0 }, { x: width, y: halfHeight }, 'grey', 'black');
+  }
 
   // Draw the Floor
-  drawGradient(context, { x: 0, y: halfHeight }, { x: width, y: height }, 'black', 'green');
+  if (level.floor === undefined) {
+    drawGradient(context, { x: 0, y: halfHeight }, { x: width, y: height }, 'black', 'grey');
+  } else {
+    // Create a buffer for storing the floor data. This can then be copied to the framebuffer in a single draw operation.
+    const floor: ImageData = context.createImageData(width, halfHeight);
+
+    // For each horizonal line from the horizon to the bottom of the screen.
+    for (let y = halfHeight; y < height; y++) {
+      // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+      const rayDirX0 = entity.dx - entity.cx;
+      const rayDirY0 = entity.dy - entity.cy;
+      const rayDirX1 = entity.dx + entity.cx;
+      const rayDirY1 = entity.dy + entity.cy;
+
+      // Current y position compared to the center of the screen (the horizon)
+      const p = y - halfHeight;
+
+      // Vertical position of the camera.
+      const posZ = 0.5 * height;
+
+      // Horizontal distance from the camera to the floor for the current row.
+      // 0.5 is the z position exactly in the middle between floor and ceiling.
+      const rowDistance = posZ / p;
+
+      // calculate the real world step vector we have to add for each x (parallel to camera plane)
+      // adding step by step avoids multiplications with a weight in the inner loop
+      const floorStepX = (rowDistance * (rayDirX1 - rayDirX0)) / width;
+      const floorStepY = (rowDistance * (rayDirY1 - rayDirY0)) / width;
+
+      // real world coordinates of the leftmost column. This will be updated as we step to the right.
+      let floorX = entity.x + rowDistance * rayDirX0;
+      let floorY = entity.y + rowDistance * rayDirY0;
+
+      // For each pixel in the horizontal line.
+      for (let x = 0; x < width; x++) {
+        // the cell coord is simply got from the integer parts of floorX and floorY
+        const cellX = Math.floor(floorX);
+        const cellY = Math.floor(floorY);
+
+        // FIXME: Should get the texture for the specific floor tile
+        const texture = getTextureById(level, level.floor);
+
+        // get the texture coordinate from the fractional part
+        const tx = Math.floor(texture.width * (floorX - cellX)) & (texture.width - 1);
+        const ty = Math.floor(texture.height * (floorY - cellY)) & (texture.height - 1);
+
+        floorX += floorStepX;
+        floorY += floorStepY;
+
+        // Get the RGBA values directly from the decoded texture.
+        const sourceOffset = 4 * (tx + ty * texture.width);
+        const pixel = {
+          r: texture.buffer[sourceOffset],
+          g: texture.buffer[sourceOffset + 1],
+          b: texture.buffer[sourceOffset + 2],
+          a: texture.buffer[sourceOffset + 3]
+        };
+
+        // Write that data into the correct location in the buffer.
+        const offset = 4 * (Math.floor(x) + Math.floor(y - halfHeight - 1) * width);
+        floor.data[offset] = pixel.r;
+        floor.data[offset + 1] = pixel.g;
+        floor.data[offset + 2] = pixel.b;
+        floor.data[offset + 3] = pixel.a;
+      }
+    }
+
+    // Copy the data from the buffer to the framebuffer.
+    context.putImageData(floor, 0, halfHeight - 1);
+
+    // FIXME: This is a lazy way to add some shading to the floor, would be better to do this when setting the pixel data in the buffer.
+    drawGradient(context, { x: 0, y: halfHeight }, { x: width, y: height }, 'rgba(0,0,0,180)', 'transparent');
+  }
 
   // Draw the Walls
   for (let column = 0; column < width; column++) {

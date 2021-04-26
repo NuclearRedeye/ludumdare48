@@ -11,5 +11,7 @@ export interface Level {
   assets: Asset[];
   data: Cell[][];
   textures: Texture[];
-  skybox?: Asset;
+  floor?: number;
+  ceiling?: number;
+  skybox?: number;
 }

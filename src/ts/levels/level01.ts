@@ -33,8 +33,14 @@ export const level01: Level = {
       url: 'assets/portal.debug.02.png',
       width: 16,
       height: 16
+    },
+    {
+      url: 'assets/floor.grass.01.png',
+      width: 16,
+      height: 16
     }
   ],
+  floor: 5,
   data: [
     [w(1), w(1), e(3), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],

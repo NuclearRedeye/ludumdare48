@@ -41,11 +41,6 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
     level.textures.push(await createTexture(asset.url, asset.width, asset.height));
   }
 
-  // Load Skybox Asset
-  if (level.skybox) {
-    level.textures.push(await createTexture(level.skybox.url, level.skybox.width, level.skybox.height));
-  }
-
   // Initialise and position Player
   player = new Player(start.x + 0.5, start.y + 0.5);
   player.rotate(degreesToRadians(start.angle));

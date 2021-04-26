@@ -44,12 +44,12 @@ export class Player implements Entity {
 
     // Check for a collision on the X Axis
     const xCell = getCell(level, Math.floor(newX), Math.floor(this.y));
-    if (isSolid(xCell) === false) {
+    if (xCell !== undefined && isSolid(xCell) === false) {
       this.x = newX;
     }
     // Check for a collision on the Y Axis
     const yCell = getCell(level, Math.floor(this.x), Math.floor(newY));
-    if (isSolid(yCell) === false) {
+    if (yCell !== undefined && isSolid(yCell) === false) {
       this.y = newY;
     }
   }
