@@ -15,41 +15,42 @@ export const level01: Level = {
   },
   assets: [
     {
-      url: 'assets/wall.cave.01.png',
-      width: 64,
-      height: 64
-    },
-    {
-      url: 'assets/wall.cave.02.png',
-      width: 64,
-      height: 64
-    },
-    {
-      url: 'assets/portal.debug.01.png',
+      url: 'assets/wall.mud.01.png',
       width: 16,
       height: 16
     },
     {
-      url: 'assets/portal.debug.02.png',
+      url: 'assets/entrance.mud.01.png',
       width: 16,
       height: 16
     },
     {
-      url: 'assets/floor.grass.01.png',
+      url: 'assets/exit.mud.01.png',
       width: 16,
+      height: 16
+    },
+    {
+      url: 'assets/floor.mud.01.png',
+      width: 16,
+      height: 16
+    },
+    {
+      url: 'assets/object.coin.01.png',
+      width: 128,
       height: 16
     }
   ],
-  floor: 5,
+  floor: 4,
+  loot: 5,
   data: [
-    [w(1), w(1), e(3), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
+    [w(1), w(1), e(2), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
-    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(1)],
+    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(1), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
-    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(1)],
+    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(1), f(0), w(1)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
-    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), w(1)],
-    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(2), f(0), g(4)],
+    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(1), f(0), w(1)],
+    [w(1), f(0), f(0), f(0), f(0), f(0), f(0), w(1), f(0), g(3)],
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
     [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)]
   ],

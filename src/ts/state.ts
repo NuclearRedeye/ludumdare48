@@ -4,6 +4,7 @@ import { Portal } from './interfaces/portal';
 import { Player } from './objects/player.js';
 import { createTexture } from './resources.js';
 import { sleep } from './utils/fps-utils.js';
+import { fillLevelWithLoot } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 
 export enum states {
@@ -47,6 +48,11 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
   // Initialise and position Player
   player = new Player(start.x + 0.5, start.y + 0.5);
   player.rotate(degreesToRadians(start.angle));
+
+  // Is it the first time we have been to the level?
+  if (level.objects.length === 0) {
+    fillLevelWithLoot(level);
+  }
 
   // FIXME: Should time the load, and then sleep for the delta.
   await sleep(2000);

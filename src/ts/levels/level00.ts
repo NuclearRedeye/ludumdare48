@@ -18,17 +18,12 @@ export const level00: Level = {
   },
   assets: [
     {
-      url: 'assets/wall.brick.01.png',
+      url: 'assets/wall.mud.01.png',
       width: 16,
       height: 16
     },
     {
-      url: 'assets/wall.brick.02.png',
-      width: 16,
-      height: 16
-    },
-    {
-      url: 'assets/portal.debug.02.png',
+      url: 'assets/exit.mud.01.png',
       width: 16,
       height: 16
     },
@@ -36,25 +31,9 @@ export const level00: Level = {
       url: 'assets/floor.grass.01.png',
       width: 16,
       height: 16
-    },
-    {
-      url: 'assets/skybox.debug.01.png',
-      width: 360,
-      height: 60
-    },
-    {
-      url: 'assets/entity.debug.01.png',
-      width: 16,
-      height: 16
-    },
-    {
-      url: 'assets/object.coin.01.png',
-      width: 128,
-      height: 16
     }
   ],
-  floor: 4,
-  skybox: 5,
+  floor: 3,
   data: [
     [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
     [w(1), f(4), f(4), f(4), f(4), f(4), f(4), f(4), f(4), w(1)],
@@ -65,9 +44,9 @@ export const level00: Level = {
     [w(1), f(4), f(4), f(4), f(4), f(4), f(4), f(4), f(4), w(1)],
     [w(1), f(4), f(4), f(4), f(4), f(4), f(4), f(4), f(4), w(1)],
     [w(1), f(4), f(4), f(4), f(4), f(4), f(4), f(4), f(4), w(1)],
-    [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), g(3), w(1)]
+    [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), g(2), w(1)]
   ],
-  objects: [new Object(6.5, 6.5, 6, 0.2), new Object(7.5, 7.5, 7, 0.2)],
+  objects: [],
   enemies: [],
   textures: []
 };

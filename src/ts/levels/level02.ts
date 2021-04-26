@@ -1,5 +1,5 @@
 import { Level } from '../interfaces/level';
-import { createFloor as f, createWall as w, createEntrance as e } from '../utils/cell-utils.js';
+import { createFloor as f, createWall as w, createEntrance as e, createExit as g } from '../utils/cell-utils.js';
 
 export const level02: Level = {
   depth: 2,
@@ -15,18 +15,35 @@ export const level02: Level = {
   },
   assets: [
     {
-      url: 'assets/wall.brick.02.png',
+      url: 'assets/wall.stone.01.png',
       width: 16,
       height: 16
     },
     {
-      url: 'assets/portal.debug.01.png',
+      url: 'assets/entrance.stone.01.png',
       width: 16,
+      height: 16
+    },
+    {
+      url: 'assets/exit.stone.01.png',
+      width: 16,
+      height: 16
+    },
+    {
+      url: 'assets/floor.stone.01.png',
+      width: 16,
+      height: 16
+    },
+    {
+      url: 'assets/object.coin.01.png',
+      width: 128,
       height: 16
     }
   ],
+  floor: 4,
+  loot: 5,
   data: [
-    [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
+    [w(1), g(3), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
     [w(1), f(0), f(0), f(0), w(1), f(0), f(0), f(0), f(0), w(1)],
     [w(1), f(0), f(0), f(0), w(1), f(0), w(1), w(1), f(0), w(1)],
     [w(1), f(0), f(0), f(0), w(1), f(0), w(1), w(1), f(0), w(1)],
