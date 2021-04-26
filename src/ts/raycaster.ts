@@ -1,4 +1,5 @@
 import { Entity } from './interfaces/entity';
+import { Sprite } from './interfaces/sprite';
 import { Level } from './interfaces/level';
 import { Rectangle } from './interfaces/rectangle';
 import { CastResult } from './interfaces/raycaster';
@@ -234,6 +235,99 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
       // Apply a darkened tint to the wall, based on its distance from the entity.
       drawTint(context, destinationRectange, (wallHeight * 1.6) / height);
+    }
+  }
+
+  // Prepare the sprites...
+  const sprites: Sprite[] = [...level.objects, ...level.enemies];
+  for (const sprite of sprites) {
+    sprite.distance = (entity.x - sprite.x) * (entity.x - sprite.x) + (entity.y - sprite.y) * (entity.y - sprite.y);
+  }
+
+  // Sort sprites from far to close
+  sprites.sort((a, b) => {
+    // FIXME: Possivly undefined
+    return (b.distance || 0) - (a.distance || 0);
+  });
+
+  //after sorting the sprites, do the projection and draw them
+  for (let i = 0; i < sprites.length; i++) {
+    // For ease...
+    const sprite = sprites[i];
+    const texture = getTextureById(level, sprite.textureId);
+
+    // Calculate the sprites position
+    const spriteX = sprite.x - entity.x;
+    const spriteY = sprite.y - entity.y;
+
+    // Calculate some magic which I don't really understand myself, but it works.
+    const invDet = 1.0 / (entity.cx * entity.dy - entity.dx * entity.cy);
+    const transformX = invDet * (entity.dy * spriteX - entity.dx * spriteY);
+    const transformY = invDet * (-entity.cy * spriteX + entity.cx * spriteY);
+
+    // The X position of the sprite
+    const spriteScreenX = Math.floor((width / 2) * (1 + transformX / transformY));
+
+    // Calculate the height of the sprite.
+    const spriteHeight = Math.abs(Math.floor(height / transformY)) * sprite.scale;
+
+    // Calculate where to start drawing the sprite on the Y Axis.
+    let drawStartY = Math.floor(-spriteHeight / 2 + height / 2);
+    if (drawStartY < 0) {
+      drawStartY = 0;
+    }
+
+    // Calculate where to start drawing the sprite on the X Axis. Aka the column of the screen to start at.
+    let drawStartX = Math.floor(-spriteHeight / 2 + spriteScreenX);
+    if (drawStartX < 0) {
+      drawStartX = 0;
+    }
+
+    // Calculate where to stop drawing the sprite on the X Axis. Aka the column of the screen to end at.
+    let drawEndX = Math.floor(spriteHeight / 2 + spriteScreenX);
+    if (drawEndX >= width) {
+      drawEndX = width - 1;
+    }
+
+    // Calculate the X offset within the texture to start drawing from.
+    let texX = 0;
+    if (drawStartX < 0) {
+      texX = -drawStartX;
+    }
+
+    // Then, for each column draw a vertical strip of the sprite.
+    for (let column = drawStartX; column < drawEndX; column++) {
+      // Only draw the sprite if..
+      // - It's in front of camera.
+      // - It's not off the left edge of the viewport.
+      // - It's not off the right edge of the viewport.
+      // - It's not too far away or hidden behind another solid that has already been rendered.
+      if (transformY > 0 && column > 0 && column < width && transformY < zBuffer[column]) {
+        // FIXME: This is supposed to make sure that when the texture is partially offscreen, we adjust the x offset for the texture acordingly.
+        const texXOffset = Math.floor(((column - drawStartX) * texture.width) / spriteHeight);
+
+        // Make sure the sprite sits on the floor, rather than floating in the air.
+        const drawStartYOffset = Math.floor(256 / transformY) - spriteHeight / 2;
+
+        // The slice of the texture that we want to render to the framebuffer.
+        const sourceRectangle: Rectangle = {
+          x: texX + texXOffset,
+          y: 0,
+          width: 1,
+          height: texture.height
+        };
+
+        // The location to render that texture to in the framebuffer.
+        const destinationRectange: Rectangle = {
+          x: column,
+          y: drawStartY + drawStartYOffset,
+          width: 1,
+          height: spriteHeight
+        };
+
+        // Draw the sprite to the screen.
+        drawTexture(context, texture, sourceRectangle, destinationRectange);
+      }
     }
   }
 }

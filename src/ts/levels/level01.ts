@@ -53,5 +53,7 @@ export const level01: Level = {
     [w(1), f(0), f(0), f(0), f(0), f(0), f(0), f(0), f(0), w(1)],
     [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)]
   ],
+  objects: [],
+  enemies: [],
   textures: []
 };

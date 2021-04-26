@@ -1,4 +1,4 @@
-import { Entity } from '../interfaces/entity';
+import { Movable } from '../interfaces/movable';
 import { Level } from '../interfaces/level';
 
 import { CellType } from '../enums.js';
@@ -9,13 +9,14 @@ import { isSolid } from '../utils/cell-utils.js';
 import { getCell } from '../utils/level-utils.js';
 import { canvasWidth } from '../config.js';
 
-export class Player implements Entity {
+export class Player implements Movable {
   x: number;
   y: number;
   dx: number;
   dy: number;
   cx: number;
   cy: number;
+  scale: number;
 
   constructor(x: number, y: number) {
     this.x = x;
@@ -24,6 +25,7 @@ export class Player implements Entity {
     this.dy = 0.0;
     this.cx = 0.0;
     this.cy = 0.66;
+    this.scale = 1.0;
   }
 
   rotate(amount: number): void {

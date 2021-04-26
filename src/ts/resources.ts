@@ -14,8 +14,8 @@ export async function createTexture(src: string, width: number, height: number):
   await image.decode();
 
   // Blit the image to the offscreen buffer
-  const context = canvas.getContext('2d', { alpha: false }) as CanvasRenderingContext2D;
-  context.fillStyle = 'white';
+  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+  context.fillStyle = 'transparent';
   context.fillRect(0, 0, width, height);
   context.drawImage(image, 0, 0, width, height, 0, 0, width, height);
 

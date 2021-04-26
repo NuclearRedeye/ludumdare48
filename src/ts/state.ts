@@ -30,15 +30,17 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
 
   // Free the current levels resources
   if (currentLevel) {
-    currentLevel.textures = [];
+    currentLevel.textures = new Array(currentLevel.assets.length);
   }
 
   // Update the current level
   currentLevel = level;
 
   // Load Assets
-  for (const asset of level.assets) {
-    level.textures.push(await createTexture(asset.url, asset.width, asset.height));
+  for (let i = 0; i < level.assets.length; i++) {
+    const asset = level.assets[i];
+    const texture = await createTexture(asset.url, asset.width, asset.height);
+    level.textures[i] = texture;
   }
 
   // Initialise and position Player
