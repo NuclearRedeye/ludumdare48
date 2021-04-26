@@ -149,21 +149,6 @@ window.onkeyup = (event: KeyboardEvent): void => {
       interact = false;
       break;
 
-    // TODO: Delete before publish
-    case 'Digit0':
-      setCurrentLevel(levels[0], levels[0].entrance);
-      break;
-
-    // TODO: Delete before publish
-    case 'Digit1':
-      setCurrentLevel(levels[1], levels[1].entrance);
-      break;
-
-    // TODO: Delete before publish
-    case 'Digit2':
-      setCurrentLevel(levels[2], levels[2].entrance);
-      break;
-
     default:
       break;
   }
