@@ -16,6 +16,7 @@ export interface Level {
   objects: Sprite[];
   enemies: Enemy[];
   floor?: number;
+  loot?: number;
   ceiling?: number;
   skybox?: number;
 }
