@@ -22,6 +22,5 @@ export class Object implements Sprite {
   }
 
   // eslint-disable-next-line
-  update(elapsed: number): void {
-  }
+  update(elapsed: number): void {}
 }

@@ -27,8 +27,7 @@ export class Enemy implements Movable, Sprite {
   }
 
   // eslint-disable-next-line
-  update(elapsed: number): void {
-  }
+  update(elapsed: number): void {}
 
   rotate(amount: number): void {
     // Rotate Player
