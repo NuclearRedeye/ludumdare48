@@ -1,5 +1,5 @@
 import { createTextElement } from './utils/utils.js';
-import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/fps-utils.js';
+import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/time-utils.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { levels } from './levels/index.js';
 import { render } from './raycaster.js';

@@ -8,7 +8,7 @@ import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
 import { isSolid, isWall } from './utils/cell-utils.js';
 import { getCell, getTextureById, getTextureForCell } from './utils/level-utils.js';
-import { getAnimationFrame } from './utils/fps-utils.js';
+import { getAnimationFrame } from './utils/time-utils.js';
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.

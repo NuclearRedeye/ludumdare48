@@ -3,7 +3,7 @@ import { Portal } from './interfaces/portal';
 
 import { Player } from './objects/player.js';
 import { createTexture } from './resources.js';
-import { sleep } from './utils/fps-utils.js';
+import { sleep } from './utils/time-utils.js';
 import { fillLevelWithLoot, getCell } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 import { CellType } from './enums.js';
