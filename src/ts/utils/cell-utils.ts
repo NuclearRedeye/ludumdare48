@@ -23,6 +23,11 @@ export function createWall(textureId: number): Cell {
   return createCell(CellType.WALL, textureId, true);
 }
 
+// Utility function to create an Invisible WALL Cell.
+export function createInvisibleWall(textureId: number): Cell {
+  return createCell(CellType.FLOOR, textureId, true);
+}
+
 // Utility function to create an ENTRANCE Cell.
 export function createEntrance(textureId: number): Cell {
   return createCell(CellType.ENTRANCE, textureId, true);
@@ -30,12 +35,17 @@ export function createEntrance(textureId: number): Cell {
 
 // Utility function to create an EXIT Cell.
 export function createExit(textureId: number): Cell {
-  return createCell(CellType.EXIT, textureId, true);
+  return createCell(CellType.EXIT, textureId, false);
 }
 
 // Utility function to determine if the specified cell is solid.
 export function isSolid(cell: Cell): boolean {
   return cell.solid;
+}
+
+// Utility function to determine if the specified cell is a Wall.
+export function isWall(cell: Cell): boolean {
+  return cell.type === CellType.WALL || cell.type === CellType.ENTRANCE;
 }
 
 // Utility function to determine if a CELL has an Activators

@@ -8,7 +8,7 @@ function getRandomInt(minimum: number, maximum: number): number {
 }
 
 export function getCell(level: Level, x: number, y: number): Cell | undefined {
-  if (x < 0 || y < 0 || x >= 10 || y >= 10) {
+  if (x < 0 || y < 0 || x >= level.data[0].length || y >= level.data.length) {
     return undefined;
   }
   return level.data[y][x];

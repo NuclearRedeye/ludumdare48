@@ -14,6 +14,7 @@ export interface Level {
   data: Cell[][];
   textures: Texture[];
   objects: Sprite[];
+  sprites: Sprite[];
   enemies: Enemy[];
   floor?: number;
   loot?: number;

@@ -6,7 +6,7 @@ import { CastResult } from './interfaces/raycaster';
 
 import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
-import { isSolid } from './utils/cell-utils.js';
+import { isSolid, isWall } from './utils/cell-utils.js';
 import { getCell, getTextureById, getTextureForCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/fps-utils.js';
 
@@ -80,7 +80,7 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
     const cell = getCell(level, mapX, mapY);
 
     // Check if the Cell is solid.
-    if (cell !== undefined && isSolid(cell)) {
+    if (cell !== undefined && isSolid(cell) && isWall(cell)) {
       // Calculate the distance from the ray's origin to the solid that was hit.
       const distance = side === 0 ? Math.abs((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) : Math.abs((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY);
 
@@ -112,13 +112,13 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
   // Draw the Floor
   if (level.floor === undefined) {
-    drawGradient(context, { x: 0, y: halfHeight }, { x: width, y: height }, 'black', 'grey');
+    drawGradient(context, { x: 0, y: halfHeight - 1 }, { x: width, y: height }, 'black', 'grey');
   } else {
     // Create a buffer for storing the floor data. This can then be copied to the framebuffer in a single draw operation.
     const floor: ImageData = context.createImageData(width, halfHeight);
 
     // For each horizonal line from the horizon to the bottom of the screen.
-    for (let y = halfHeight; y < height; y++) {
+    for (let y = halfHeight - 1; y < height; y++) {
       // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
       const rayDirX0 = entity.dx - entity.cx;
       const rayDirY0 = entity.dy - entity.cy;
@@ -160,14 +160,21 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
         }
 
         // get the texture coordinate from the fractional part
-        const tx = Math.floor(texture.width * (floorX - cellX)) & (texture.width - 1);
+        const tx = Math.floor(texture.height * (floorX - cellX)) & (texture.height - 1);
         const ty = Math.floor(texture.height * (floorY - cellY)) & (texture.height - 1);
 
         floorX += floorStepX;
         floorY += floorStepY;
 
+        // If the texture is animated, then calculate the offset for the frame within the texture.
+        let texXAnimationOffset = 0;
+        if (texture.width > texture.height) {
+          const frame = getAnimationFrame();
+          texXAnimationOffset = frame * texture.height;
+        }
+
         // Get the RGBA values directly from the decoded texture.
-        const sourceOffset = 4 * (tx + ty * texture.width);
+        const sourceOffset = 4 * (texXAnimationOffset + tx + ty * texture.width);
         const pixel = {
           r: texture.buffer[sourceOffset],
           g: texture.buffer[sourceOffset + 1],
@@ -188,7 +195,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     context.putImageData(floor, 0, halfHeight - 1);
 
     // FIXME: This is a lazy way to add some shading to the floor, would be better to do this when setting the pixel data in the buffer.
-    drawGradient(context, { x: 0, y: halfHeight }, { x: width, y: height }, 'rgba(0,0,0,180)', 'transparent');
+    drawGradient(context, { x: 0, y: halfHeight - 1 }, { x: width, y: height }, 'rgba(0,0,0,180)', 'transparent');
   }
 
   // Draw the Walls
@@ -246,7 +253,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
   }
 
   // Prepare the sprites...
-  const sprites: Sprite[] = [...level.objects, ...level.enemies];
+  const sprites: Sprite[] = [...level.objects, ...level.enemies, ...level.sprites];
   for (const sprite of sprites) {
     sprite.distance = (entity.x - sprite.x) * (entity.x - sprite.x) + (entity.y - sprite.y) * (entity.y - sprite.y);
   }

@@ -3,6 +3,7 @@ import { createFloor as f, createWall as w, createEntrance as e, createExit as g
 
 export const level02: Level = {
   depth: 2,
+  name: 'It Goes Deeper',
   entrance: {
     x: 5,
     y: 4,
@@ -10,7 +11,7 @@ export const level02: Level = {
   },
   exit: {
     x: 2,
-    y: 0,
+    y: 2,
     angle: 90
   },
   assets: [
@@ -43,9 +44,9 @@ export const level02: Level = {
   floor: 4,
   loot: 5,
   data: [
-    [w(1), g(3), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
+    [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)],
     [w(1), f(4), f(4), f(4), w(1), f(4), f(4), f(4), f(4), w(1)],
-    [w(1), f(4), f(4), f(4), w(1), f(4), w(1), w(1), f(4), w(1)],
+    [w(1), f(4), g(3), f(4), w(1), f(4), w(1), w(1), f(4), w(1)],
     [w(1), f(4), f(4), f(4), w(1), f(4), w(1), w(1), f(4), w(1)],
     [w(1), w(1), f(4), w(1), w(1), f(4), w(1), w(1), f(4), w(1)],
     [w(1), f(4), f(4), f(4), w(1), e(2), w(1), w(1), f(4), w(1)],
@@ -55,6 +56,7 @@ export const level02: Level = {
     [w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1), w(1)]
   ],
   objects: [],
+  sprites: [],
   enemies: [],
   textures: []
 };

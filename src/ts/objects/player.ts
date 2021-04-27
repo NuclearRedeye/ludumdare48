@@ -61,6 +61,18 @@ export class Player implements Movable {
     if (yCell !== undefined && isSolid(yCell) === false) {
       this.y = newY;
     }
+
+    // Check if we walked into a hole.
+    const newCell = getCell(level, Math.floor(this.x), Math.floor(this.y));
+    if (newCell != undefined) {
+      if (newCell.type === CellType.EXIT) {
+        // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
+        setTimeout(() => {
+          const newLevel = level.exit.destination ? levels[level.exit.destination] : levels[level.depth + 1];
+          setCurrentLevel(newLevel, newLevel.entrance);
+        }, 0);
+      }
+    }
   }
 
   interact(level: Level): void {

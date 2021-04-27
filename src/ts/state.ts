@@ -4,8 +4,9 @@ import { Portal } from './interfaces/portal';
 import { Player } from './objects/player.js';
 import { createTexture } from './resources.js';
 import { sleep } from './utils/fps-utils.js';
-import { fillLevelWithLoot } from './utils/level-utils.js';
+import { fillLevelWithLoot, getCell } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
+import { CellType } from './enums.js';
 
 export enum states {
   STARTING,
@@ -46,7 +47,22 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
   }
 
   // Initialise and position Player
-  player = new Player(start.x + 0.5, start.y + 0.5);
+  let playerX = start.x;
+  let playerY = start.y;
+
+  // FIXME: If the spawn point is already OK, then no need to do this.
+  for (let x = -1; x < 1; x++) {
+    for (let y = -1; y < 1; y++) {
+      const cell = getCell(level, playerX + x, playerY + y);
+      if (cell !== undefined && cell.type === CellType.FLOOR && cell.solid === false) {
+        playerX += x;
+        playerY += y;
+        break;
+      }
+    }
+  }
+
+  player = new Player(playerX + 0.5, playerY + 0.5);
   player.rotate(degreesToRadians(start.angle));
 
   // Is it the first time we have been to the level?
