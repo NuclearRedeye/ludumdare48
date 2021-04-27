@@ -4,10 +4,9 @@ import { createTextureAnimated, createTextureBasic } from '../../utils/texture-u
 
 // Stores all the Textures that are used in the game.
 export const textures: Texture[] = [
-  createTextureBasic(1, 'assets/wall.mud.01.png', 16, 16),
-  createTextureBasic(2, 'assets/exit.mud.01.png', 16, 16),
-  createTextureBasic(3, 'assets/floor.grass.01.png', 16, 16),
-  createTextureBasic(4, 'assets/exit.grass.02.png', 16, 16),
-  createTextureBasic(5, 'assets/exit.mud.01.png', 16, 16),
-  createTextureAnimated(6, 'assets/floor.water.01.png', 16, 16, 8)
+  createTextureBasic(1, 'assets/debug.wall.01.png', 16, 16),
+  createTextureBasic(2, 'assets/debug.floor.01.png', 16, 16),
+  createTextureBasic(3, 'assets/debug.ceiling.01.png', 16, 16),
+  createTextureBasic(4, 'assets/debug.toggle.01.png', 16, 16, 2),
+  createTextureAnimated(5, 'assets/debug.animated.01.png', 16, 16, 8)
 ];
