@@ -1,5 +1,5 @@
-import { Level } from '../interfaces/level';
-import { createFloor as f, createWall as w } from '../utils/cell-utils.js';
+import { Level } from '../../interfaces/level';
+import { createFloor as f, createWall as w } from '../../utils/cell-utils.js';
 
 export const level06: Level = {
   depth: 6,

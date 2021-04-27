@@ -2,7 +2,7 @@ import { Movable } from '../interfaces/movable';
 import { Level } from '../interfaces/level';
 
 import { CellType } from '../enums.js';
-import { levels } from '../levels/index.js';
+import { levels } from '../data/levels/levels.js';
 import { castRay } from '../raycaster.js';
 import { setCurrentLevel } from '../state.js';
 import { isSolid } from '../utils/cell-utils.js';

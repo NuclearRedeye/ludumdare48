@@ -1,4 +1,4 @@
-import { Level } from '../interfaces/level';
+import { Level } from '../../interfaces/level';
 
 import { level00 } from './level00.js';
 import { level01 } from './level01.js';

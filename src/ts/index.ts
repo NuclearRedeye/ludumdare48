@@ -1,7 +1,7 @@
 import { createTextElement } from './utils/utils.js';
 import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/time-utils.js';
 import { canvasWidth, canvasHeight } from './config.js';
-import { levels } from './levels/index.js';
+import { levels } from './data/levels/levels.js';
 import { render } from './raycaster.js';
 import { getCurrentLevel, getCurrentState, getPlayer, setCurrentLevel, states } from './state.js';
 import { checkEntityCollision } from './utils/collision-utils.js';
