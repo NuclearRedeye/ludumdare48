@@ -4,7 +4,7 @@ import { createFloor as f, createWall as w, createExit as g, createInvisibleWall
 
 export const level00: Level = {
   depth: 0,
-  name: 'Surface',
+  name: 'Debug',
   entrance: {
     x: 5,
     y: 1,
