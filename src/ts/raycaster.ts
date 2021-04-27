@@ -222,6 +222,13 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       // Calculate the X offset in the Texture for the slice that needs to be rendered.
       const wallX = Math.floor(result.wall * texture.width);
 
+      // If the texture is animated, then calculate the X offset for the frame within the texture.
+      let texXAnimationOffset = 0;
+      if (isTextureAnimated(texture)) {
+        const frame = getAnimationFrame();
+        texXAnimationOffset = frame * texture.width;
+      }
+
       // FIXME: Any South or West facing texture is falling into a trap here.
       /*if (result.side === 0 && entity.dy < 0) {
         wallX = texture.width - wallX - 1;
@@ -232,7 +239,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
       // The slice of the texture that we want to render to the framebuffer.
       const sourceRectangle: Rectangle = {
-        x: wallX,
+        x: texXAnimationOffset + wallX,
         y: 0,
         width: 1,
         height: texture.height
