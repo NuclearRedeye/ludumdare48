@@ -7,8 +7,9 @@ import { CastResult } from './interfaces/raycaster';
 import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
 import { isSolid, isWall } from './utils/cell-utils.js';
-import { getCell, getTextureById, getTextureForCell } from './utils/level-utils.js';
+import { getCell, getTextureForCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
+import { getTextureById, isTextureAnimated } from './utils/texture-utils.js';
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
@@ -151,16 +152,16 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
         const cellY = Math.floor(floorY);
 
         // FIXME: This works, but not sure it is correct.
-        let texture = getTextureById(level, level.floor);
+        let texture = getTextureById(level.floor);
         if (!Number.isNaN(cellX) || !Number.isNaN(cellY) || isFinite(cellX) || isFinite(cellY)) {
           const cell = getCell(level, cellX, cellY);
           if (cell !== undefined) {
-            texture = getTextureById(level, cell.textureId);
+            texture = getTextureById(cell.textureId);
           }
         }
 
         // get the texture coordinate from the fractional part
-        const tx = Math.floor(texture.height * (floorX - cellX)) & (texture.height - 1);
+        const tx = Math.floor(texture.width * (floorX - cellX)) & (texture.width - 1);
         const ty = Math.floor(texture.height * (floorY - cellY)) & (texture.height - 1);
 
         floorX += floorStepX;
@@ -168,18 +169,19 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
         // If the texture is animated, then calculate the offset for the frame within the texture.
         let texXAnimationOffset = 0;
-        if (texture.width > texture.height) {
+        if (isTextureAnimated(texture)) {
           const frame = getAnimationFrame();
-          texXAnimationOffset = frame * texture.height;
+          texXAnimationOffset = frame * texture.width;
         }
 
         // Get the RGBA values directly from the decoded texture.
-        const sourceOffset = 4 * (texXAnimationOffset + tx + ty * texture.width);
+        const sourceOffset = 4 * (texXAnimationOffset + tx + ty * texture.imageWidth);
+        const buffer = texture.buffer as Uint8ClampedArray;
         const pixel = {
-          r: texture.buffer[sourceOffset],
-          g: texture.buffer[sourceOffset + 1],
-          b: texture.buffer[sourceOffset + 2],
-          a: texture.buffer[sourceOffset + 3]
+          r: buffer[sourceOffset],
+          g: buffer[sourceOffset + 1],
+          b: buffer[sourceOffset + 2],
+          a: buffer[sourceOffset + 3]
         };
 
         // Write that data into the correct location in the buffer.
@@ -215,7 +217,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       const wallY = -wallHeight / 2 + height / 2;
 
       // Get the texture for the solid cell.
-      const texture = getTextureForCell(level, result.cell);
+      const texture = getTextureForCell(result.cell);
 
       // Calculate the X offset in the Texture for the slice that needs to be rendered.
       const wallX = Math.floor(result.wall * texture.width);
@@ -275,7 +277,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
     }
 
     // Get the texture for the sprite
-    const texture = getTextureById(level, sprite.textureId);
+    const texture = getTextureById(sprite.textureId);
 
     // Calculate the sprites position
     const spriteX = sprite.x - entity.x;
@@ -325,13 +327,13 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       // - It's not too far away or hidden behind another solid that has already been rendered.
       if (transformY > 0 && column > 0 && column < width && transformY < zBuffer[column]) {
         // FIXME: This is supposed to make sure that when the texture is partially offscreen, we adjust the x offset for the texture acordingly.
-        const texXOffset = Math.floor(((column - drawStartX) * texture.height) / spriteHeight);
+        const texXOffset = Math.floor(((column - drawStartX) * texture.width) / spriteHeight);
 
         // If the object is animated, then calculate the offset for the frame within the texture.
         let texXAnimationOffset = 0;
-        if (texture.width > texture.height) {
+        if (isTextureAnimated(texture)) {
           const frame = getAnimationFrame();
-          texXAnimationOffset = frame * texture.height;
+          texXAnimationOffset = frame * texture.width;
         }
 
         // Make sure the sprite sits on the floor, rather than floating in the air.

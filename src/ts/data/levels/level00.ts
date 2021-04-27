@@ -15,36 +15,9 @@ export const level00: Level = {
     y: 5,
     angle: 270
   },
-  assets: [
-    {
-      url: 'assets/wall.mud.01.png',
-      width: 16,
-      height: 16
-    },
-    {
-      url: 'assets/exit.mud.01.png',
-      width: 16,
-      height: 16
-    },
-    {
-      url: 'assets/floor.grass.01.png',
-      width: 16,
-      height: 16
-    },
-    {
-      url: 'assets/exit.grass.02.png',
-      width: 16,
-      height: 16
-    },
-    {
-      url: 'assets/floor.water.01.png',
-      width: 128,
-      height: 16
-    }
-  ],
-  floor: 5,
+  floor: 6,
   data: [
-    [i(5), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(5)],
+    [i(6), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(6)],
     [i(3), i(3), f(3), f(3), f(3), f(3), f(3), f(3), i(3), i(3)],
     [i(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), i(3)],
     [i(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), i(3)],
@@ -53,10 +26,9 @@ export const level00: Level = {
     [i(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), i(3)],
     [i(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), f(3), i(3)],
     [i(3), i(3), f(3), f(3), f(3), f(3), f(3), f(3), i(3), i(3)],
-    [i(5), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(5)]
+    [i(6), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(3), i(6)]
   ],
   objects: [],
   sprites: [],
-  enemies: [],
-  textures: []
+  enemies: []
 };

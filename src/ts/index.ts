@@ -3,7 +3,7 @@ import { Mark, getCurrentFramesPerSecond, getDelta, getElapsed } from './utils/t
 import { canvasWidth, canvasHeight } from './config.js';
 import { levels } from './data/levels/levels.js';
 import { render } from './raycaster.js';
-import { getCurrentLevel, getCurrentState, getPlayer, setCurrentLevel, states } from './state.js';
+import { getCurrentLevel, getGameState, getPlayer, setCurrentLevel, states } from './state.js';
 import { checkEntityCollision } from './utils/collision-utils.js';
 import { getLevelName } from './utils/level-utils.js';
 
@@ -56,7 +56,7 @@ function onTick(timestamp: number): void {
     // Clear the Canvas, although no real need as we will be drawing over every pixel.
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    switch (getCurrentState()) {
+    switch (getGameState()) {
       case states.LOADING:
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvasWidth, canvasHeight);

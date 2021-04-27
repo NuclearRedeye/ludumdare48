@@ -1,6 +1,4 @@
 import { Portal } from './portal';
-import { Asset } from './asset';
-import { Texture } from './texture';
 import { Cell } from './cell';
 import { Enemy } from '../objects/enemy';
 import { Sprite } from './sprite';
@@ -10,9 +8,7 @@ export interface Level {
   name?: string;
   entrance: Portal;
   exit: Portal;
-  assets: Asset[];
   data: Cell[][];
-  textures: Texture[];
   objects: Sprite[];
   sprites: Sprite[];
   enemies: Enemy[];

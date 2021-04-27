@@ -11,3 +11,15 @@ export enum Face {
   SOUTH,
   WEST
 }
+
+export enum TextureState {
+  UNLOADED = 0,
+  LOADING = 1,
+  LOADED = 2,
+  ERROR = 4
+}
+
+export enum TextureProperty {
+  NONE = 0,
+  ANIMATED = 1
+}

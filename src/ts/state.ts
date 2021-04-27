@@ -1,12 +1,13 @@
 import { Level } from './interfaces/level';
 import { Portal } from './interfaces/portal';
+import { Texture } from './interfaces/texture';
 
 import { Player } from './objects/player.js';
-import { createTexture } from './resources.js';
 import { sleep } from './utils/time-utils.js';
 import { fillLevelWithLoot, getCell } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 import { CellType } from './enums.js';
+import { getTextureById, loadTexture } from './utils/texture-utils.js';
 
 export enum states {
   STARTING,
@@ -18,33 +19,43 @@ let currentLevel: Level;
 let player: Player;
 let currentState: number = states.STARTING;
 
-export function getCurrentState(): number {
+export function getGameState(): number {
   return currentState;
 }
 
-export function setCurrentState(state: number): void {
+export function setGameState(state: number): void {
   if (state !== currentState) {
     currentState = state;
   }
 }
 
 export async function setCurrentLevel(level: Level, start: Portal): Promise<void> {
-  setCurrentState(states.LOADING);
+  setGameState(states.LOADING);
 
   // Free the current levels resources
-  if (currentLevel) {
-    currentLevel.textures = new Array(currentLevel.assets.length);
-  }
 
   // Update the current level
   currentLevel = level;
 
-  // Load Assets
-  for (let i = 0; i < level.assets.length; i++) {
-    const asset = level.assets[i];
-    const texture = await createTexture(asset.url, asset.width, asset.height);
-    level.textures[i] = texture;
+  // For each cell in the level, get the ID of the texture and then load the
+  // FIXME: Should create an iterator for the level data. This will do for now.
+  const proimises: Promise<Texture>[] = [];
+  for (let y = 0; y < level.data.length; y++) {
+    for (let x = 0; x < level.data[0].length; x++) {
+      const cell = level.data[y][x];
+      const texture = getTextureById(cell.textureId);
+      proimises.push(loadTexture(texture));
+    }
   }
+
+  // FIXME: Need to remove this once I fix the floor logic.
+  if (level.floor) {
+    const texture = getTextureById(level.floor);
+    proimises.push(loadTexture(texture));
+  }
+
+  // Wait for all the Textures to load.
+  await Promise.all(proimises);
 
   // Initialise and position Player
   let playerX = start.x;
@@ -74,7 +85,7 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
   await sleep(2000);
 
   // Update Game State
-  setCurrentState(states.LOADED);
+  setGameState(states.LOADED);
 }
 
 export function getPlayer(): Player {

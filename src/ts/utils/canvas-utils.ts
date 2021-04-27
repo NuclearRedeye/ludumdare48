@@ -38,12 +38,12 @@ export function drawGradient(context: CanvasRenderingContext2D, start: Point, en
 
 // Draws the specified texture at the specified location on the target canvas.
 export function drawTexture(context: CanvasRenderingContext2D, texture: Texture, source: Rectangle, destination: Rectangle): void {
-  context.drawImage(texture.canvas, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
+  context.drawImage(texture.canvas as HTMLCanvasElement, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
 }
 
 // Draws the specified texture as a Skybox at the specified location on the target canvas.
 export function drawSkybox(context: CanvasRenderingContext2D, start: Point, end: Point, texturePositionX: number, texture: Texture): void {
   // FIXME: height should not be hardcoded here!
   const wallHeight = end.y - start.y;
-  context.drawImage(texture.canvas, texturePositionX, 0, 1, (wallHeight / canvasHeight) * texture.height, start.x, start.y, 1, wallHeight);
+  context.drawImage(texture.canvas as HTMLCanvasElement, texturePositionX, 0, 1, (wallHeight / canvasHeight) * texture.height, start.x, start.y, 1, wallHeight);
 }

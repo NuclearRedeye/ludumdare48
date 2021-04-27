@@ -1,6 +1,8 @@
 import { Cell } from '../interfaces/cell';
 import { Level } from '../interfaces/level';
 import { Texture } from '../interfaces/texture';
+
+import { textures } from '../data/textures/textures.js';
 import { Object } from '../objects/object.js';
 
 function getRandomInt(minimum: number, maximum: number): number {
@@ -14,13 +16,9 @@ export function getCell(level: Level, x: number, y: number): Cell | undefined {
   return level.data[y][x];
 }
 
-export function getTextureForCell(level: Level, cell: Cell): Texture {
+export function getTextureForCell(cell: Cell): Texture {
   // FIXME: Textures should be Indexed properly!
-  return level.textures[cell.textureId - 1];
-}
-
-export function getTextureById(level: Level, id: number): Texture {
-  return level.textures[id - 1];
+  return textures[cell.textureId - 1];
 }
 
 export function getLevelName(level: Level): string {
