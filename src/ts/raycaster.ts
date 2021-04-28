@@ -4,6 +4,7 @@ import { Level } from './interfaces/level';
 import { Rectangle } from './interfaces/rectangle';
 import { CastResult } from './interfaces/raycaster';
 
+import { Face } from './enums.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
 import { isSolid, isWall } from './utils/cell-utils.js';
@@ -70,11 +71,11 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
     if (sideDistanceX < sideDistanceY) {
       sideDistanceX += deltaDistanceX;
       mapX += stepX;
-      side = 0;
+      side = entity.dx < 0 ? Face.EAST : Face.WEST;
     } else {
       sideDistanceY += deltaDistanceY;
       mapY += stepY;
-      side = 1;
+      side = entity.dy > 0 ? Face.NORTH : Face.SOUTH;
     }
 
     // Get the Cell that the ray has hit.
@@ -82,11 +83,24 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
 
     // Check if the Cell is solid.
     if (cell !== undefined && isSolid(cell) && isWall(cell)) {
-      // Calculate the distance from the ray's origin to the solid that was hit.
-      const distance = side === 0 ? Math.abs((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) : Math.abs((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY);
+      // Calculate the distance from the ray's origin to the solid that was hit, and the specific point on the wall the ray hit.
+      let distance = 0;
+      let wall = 0;
+      switch (side) {
+        case Face.EAST:
+        case Face.WEST:
+          distance = Math.abs((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX);
+          wall = entity.y + ((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) * rayDirectionY;
+          break;
 
-      // Calculate the point on the wall that the ray hit
-      let wall = side === 0 ? entity.y + ((mapX - entity.x + (1 - stepX) / 2) / rayDirectionX) * rayDirectionY : entity.x + ((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY) * rayDirectionX;
+        case Face.NORTH:
+        case Face.SOUTH:
+          distance = Math.abs((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY);
+          wall = entity.x + ((mapY - entity.y + (1 - stepY) / 2) / rayDirectionY) * rayDirectionX;
+          break;
+      }
+
+      // TODO: Why is this essential?
       wall -= Math.floor(wall);
 
       return {
@@ -220,7 +234,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       const texture = getTextureForCell(result.cell);
 
       // Calculate the X offset in the Texture for the slice that needs to be rendered.
-      const wallX = Math.floor(result.wall * texture.width);
+      let wallX = Math.floor(result.wall * texture.width);
 
       // If the texture is animated, then calculate the X offset for the frame within the texture.
       let texXAnimationOffset = 0;
@@ -229,13 +243,10 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
         texXAnimationOffset = frame * texture.width;
       }
 
-      // FIXME: Any South or West facing texture is falling into a trap here.
-      /*if (result.side === 0 && entity.dy < 0) {
+      // If the face of the wall is North or East then need to invert the X offset.
+      if (result.side === Face.NORTH || result.side === Face.EAST) {
         wallX = texture.width - wallX - 1;
       }
-      if (result.side === 1 && entity.dx > 0) {
-        wallX = texture.width - wallX - 1;
-      }*/
 
       // The slice of the texture that we want to render to the framebuffer.
       const sourceRectangle: Rectangle = {
