@@ -78,7 +78,7 @@ export class Player implements Movable {
   interact(level: Level): void {
     const result = castRay(canvasWidth / 2, this, level);
     if (result != undefined) {
-      // Target is an entraance...
+      // Target is an entrance...
       if (result.cell.type === CellType.ENTRANCE && result.distance < 1) {
         // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
         setTimeout(() => {
