@@ -107,7 +107,7 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
         x: mapX,
         y: mapY,
         cell,
-        side,
+        face: side,
         wall,
         distance: distance
       };
@@ -244,7 +244,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       }
 
       // If the face of the wall is North or East then need to invert the X offset.
-      if (result.side === Face.NORTH || result.side === Face.EAST) {
+      if (result.face === Face.NORTH || result.face === Face.EAST) {
         wallX = texture.width - wallX - 1;
       }
 

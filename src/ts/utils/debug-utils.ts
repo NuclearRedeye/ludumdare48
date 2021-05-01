@@ -2,26 +2,30 @@ import { CastResult } from '../interfaces/raycaster';
 
 import { Face } from '../enums.js';
 
-// Function to dump a CastResult to the console
-export function dumpCastResult(result: CastResult): void {
-  let face = '';
-  switch (result.side) {
+// Function that gets a string representation of the specified Face
+export function faceToString(face: Face): string {
+  let retVal = 'UNKNOWN';
+  switch (face) {
     case Face.NORTH:
-      face = 'North';
+      retVal = 'North';
       break;
     case Face.SOUTH:
-      face = 'South';
+      retVal = 'South';
       break;
     case Face.EAST:
-      face = 'East';
+      retVal = 'East';
       break;
     case Face.WEST:
-      face = 'West';
+      retVal = 'West';
       break;
   }
+  return retVal;
+}
 
+// Function to dump a CastResult to the console
+export function dumpCastResult(result: CastResult): void {
   console.log(`CastResult:`);
   console.log(`- Cell = (${result.x}, ${result.y})`);
-  console.log(`- Face = ${face}`);
+  console.log(`- Face = ${faceToString(result.face)}`);
   console.log(`- Distance = ${result.distance}`);
 }
