@@ -1,7 +1,7 @@
-import { Entity } from '../interfaces/entity';
+import { Circle } from '../interfaces/circle';
 import { Rectangle } from '../interfaces/rectangle';
 
-export function checkEntityCollision(a: Entity, b: Entity): boolean {
+export function checkEntityCollision(a: Circle, b: Circle): boolean {
   let retVal = false;
   const dx = a.x - b.x;
   const dy = a.y - b.y;
@@ -13,8 +13,8 @@ export function checkEntityCollision(a: Entity, b: Entity): boolean {
   return retVal;
 }
 
-export function checkEntityWithCell(entity: Entity, rectangle: Rectangle): boolean {
-  // temporarectangle.y variables to set edges for testing
+export function checkEntityWithCell(entity: Circle, rectangle: Rectangle): boolean {
+  // temporay variables to set edges for testing
   let testX = entity.x;
   let testY = entity.y;
 

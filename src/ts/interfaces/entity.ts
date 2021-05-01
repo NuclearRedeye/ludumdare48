@@ -1,11 +1,10 @@
-export interface Entity {
-  x: number; // The X position of the Entity
-  y: number; // The Y position of the Entity
+import { Circle } from './circle';
+
+export interface Entity extends Circle {
   dx: number;
   dy: number;
   cx: number;
   cy: number;
   active: boolean;
-  radius: number;
   update(elapsed: number): void;
 }
