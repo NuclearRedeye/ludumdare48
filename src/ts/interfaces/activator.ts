@@ -1,4 +1,3 @@
-export interface Activator {
-  message: string;
-  count: number;
-}
+import { Cell } from './cell';
+
+export type Activator = (cell: Cell) => void;

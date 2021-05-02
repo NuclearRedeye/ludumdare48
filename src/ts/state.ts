@@ -8,7 +8,7 @@ import { fillLevelWithLoot, getCell } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 import { CellType } from './enums.js';
 import { getTextureById, loadTexture } from './utils/texture-utils.js';
-import { isSolid } from './utils/cell-utils.js';
+import { isBlocked, isSolid } from './utils/cell-utils.js';
 
 export enum states {
   STARTING,
@@ -69,7 +69,7 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
   for (let x = -1; x < 1; x++) {
     for (let y = -1; y < 1; y++) {
       const cell = getCell(level, playerX + x, playerY + y);
-      if (cell !== undefined && cell.type === CellType.FLOOR && !isSolid(cell)) {
+      if (cell !== undefined && cell.type === CellType.FLOOR && !isSolid(cell) && !isBlocked(cell)) {
         playerX += x;
         playerY += y;
         break;

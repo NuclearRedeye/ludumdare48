@@ -1,6 +1,6 @@
 import { Texture } from '../interfaces/texture';
 
-import { TextureState, TextureProperty } from '../enums.js';
+import { TextureState, TextureProperties } from '../enums.js';
 import { textures } from '../data/textures/textures.js';
 
 // Creates a new Texture using the specified input
@@ -12,8 +12,10 @@ function createTexture(id: number, imageUrl: string, imageWidth: number, imageHe
     imageHeight,
     width,
     height,
-    state: 0,
-    properties
+    frames: imageWidth / width,
+    states: imageHeight / height,
+    properties,
+    state: TextureState.UNLOADED
   };
 }
 
@@ -23,18 +25,23 @@ function textureHasState(texture: Texture, state: TextureState): number {
 }
 
 // Checks if the specified texture has the specified property
-function textureHasProperty(texture: Texture, property: TextureProperty): number {
+function textureHasProperty(texture: Texture, property: TextureProperties): number {
   return texture.properties & property;
 }
 
 // Helper function to create a simple texture.
-export function createTextureBasic(id: number, imageUrl: string, width: number, height: number, properties: number = 0): Texture {
+export function createTextureBasic(id: number, imageUrl: string, width: number, height: number, properties: number = TextureProperties.NONE): Texture {
   return createTexture(id, imageUrl, width, height, width, height, properties);
 }
 
 // Helper function to create a simple animated texture.
 export function createTextureAnimated(id: number, imageUrl: string, width: number, height: number, frames: number, properties: number = 0): Texture {
-  return createTexture(id, imageUrl, width * frames, height, width, height, properties | TextureProperty.ANIMATED);
+  return createTexture(id, imageUrl, width * frames, height, width, height, properties | TextureProperties.ANIMATED);
+}
+
+// Helper function to create a basic texture with the specified number of states.
+export function createTextureStateful(id: number, imageUrl: string, width: number, height: number, states: number, properties: number = 0): Texture {
+  return createTexture(id, imageUrl, width, height * states, width, height, properties | TextureProperties.STATEFUL);
 }
 
 // Utility function to determine if the specified texture has loaded or not.
@@ -49,7 +56,12 @@ export function isTextureUnloaded(texture: Texture): number {
 
 // Checks if the specified texture is animated.
 export function isTextureAnimated(texture: Texture): number {
-  return textureHasProperty(texture, TextureProperty.ANIMATED);
+  return textureHasProperty(texture, TextureProperties.ANIMATED);
+}
+
+// Checks if the specified texture is stateful.
+export function isTextureStateful(texture: Texture): number {
+  return textureHasProperty(texture, TextureProperties.STATEFUL);
 }
 
 // Gets the specified texture by Id.
@@ -81,7 +93,7 @@ export async function loadTexture(texture: Texture): Promise<Texture> {
   // Create an offscreen canvas.
   const canvas: HTMLCanvasElement = document.createElement('canvas');
   canvas.width = texture.imageWidth;
-  canvas.height = texture.imageWidth;
+  canvas.height = texture.imageHeight;
 
   // Blit the image to the the canvas.
   // NOTE: Using a Canvas as a source for drawImage should be faster than using an Image.

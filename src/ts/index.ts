@@ -20,19 +20,31 @@ let rotateLeft = false;
 let rotateRight = false;
 let moveForwards = false;
 let moveBackwards = false;
+
 let interact = false;
+let interactCooldown = 0;
+const interactPerSecond = 2;
 
 let score = 0;
 const rotationSpeed = 1.0;
 const movementSpeed = 2.0;
 
 function update(elapsed: number): void {
+  // FIXME: There are better ways to do this.
+  interactCooldown -= Math.floor(elapsed);
+  if (interactCooldown < 0) {
+    interactCooldown = 0;
+  }
+
   const player = getPlayer();
   if (moveForwards) player.move(movementSpeed / elapsed, getCurrentLevel());
   if (moveBackwards) player.move(-(movementSpeed / 2) / elapsed, getCurrentLevel());
   if (rotateLeft) player.rotate(-rotationSpeed / elapsed);
   if (rotateRight) player.rotate(rotationSpeed / elapsed);
-  if (interact) player.interact(getCurrentLevel());
+  if (interact && interactCooldown === 0) {
+    player.interact(getCurrentLevel());
+    interactCooldown = 1000 / interactPerSecond;
+  }
 
   // Check Collisions, nothing moves at the moment so for now just player vs all objects...
   const level = getCurrentLevel();
@@ -81,9 +93,14 @@ function onTick(timestamp: number): void {
     // If 'debug' is enabled, print various stats.
     if (debug) {
       context.fillStyle = 'white';
+      context.font = '12px serif';
+      context.textAlign = 'start';
       context.fillText(`Current FPS: ${getCurrentFramesPerSecond().toFixed(2)}`, 10, 10);
       context.fillText(`Previous FT: ${getDelta().toFixed(2)}`, 10, 30);
       context.fillText(`Runtime: ${getElapsed().toFixed(2)} seconds`, 10, 50);
+      const player = getPlayer();
+      context.fillText(`Player Pos: (${player.x}, ${player.y})`, 10, 70);
+      context.fillText(`Player Dir: (${player.dx}, ${player.dy})`, 10, 90);
     }
   }
 
@@ -147,6 +164,7 @@ window.onkeyup = (event: KeyboardEvent): void => {
 
     case 'Space':
       interact = false;
+      interactCooldown = 0;
       break;
 
     default:

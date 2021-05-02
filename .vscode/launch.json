@@ -12,7 +12,7 @@
         "group": "",
         "order": 1
       },
-      "userDataDir": "${workspaceRoot}.vscode/chrome",
+      "userDataDir": "${workspaceRoot}/.vscode/chrome",
       "runtimeArgs": [
         "--disable-infobars --disable-session-crashed-bubble"
       ],

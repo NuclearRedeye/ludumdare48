@@ -6,7 +6,7 @@ export enum CellType {
 }
 
 export enum Face {
-  NORTH,
+  NORTH = 0,
   EAST,
   SOUTH,
   WEST,
@@ -21,12 +21,15 @@ export enum TextureState {
   ERROR = 4
 }
 
-export enum TextureProperty {
+export enum TextureProperties {
   NONE = 0,
-  ANIMATED = 1
+  ANIMATED = 1,
+  STATEFUL = 2
 }
 
-export enum CellProperty {
-  NONE = 1,
-  SOLID = 2
+export enum CellProperties {
+  NONE = 0,
+  SOLID = 1,
+  BLOCKED = 2,
+  INTERACTIVE = 4
 }

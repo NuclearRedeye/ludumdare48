@@ -5,9 +5,10 @@ import { CellType } from '../enums.js';
 import { levels } from '../data/levels/levels.js';
 import { castRay } from '../raycaster.js';
 import { setCurrentLevel } from '../state.js';
-import { isSolid } from '../utils/cell-utils.js';
+import { getTexture, isBlocked, isInteractive, isSolid } from '../utils/cell-utils.js';
 import { getCell } from '../utils/level-utils.js';
 import { canvasWidth } from '../config.js';
+import { isTextureStateful } from '../utils/texture-utils.js';
 
 export class Player implements Movable {
   x: number;
@@ -53,12 +54,12 @@ export class Player implements Movable {
 
     // Check for a collision on the X Axis
     const xCell = getCell(level, Math.floor(newX), Math.floor(this.y));
-    if (xCell !== undefined && !isSolid(xCell)) {
+    if (xCell !== undefined && !isSolid(xCell) && !isBlocked(xCell)) {
       this.x = newX;
     }
     // Check for a collision on the Y Axis
     const yCell = getCell(level, Math.floor(this.x), Math.floor(newY));
-    if (yCell !== undefined && !isSolid(yCell)) {
+    if (yCell !== undefined && !isSolid(yCell) && !isBlocked(yCell)) {
       this.y = newY;
     }
 
@@ -78,6 +79,14 @@ export class Player implements Movable {
   interact(level: Level): void {
     const result = castRay(canvasWidth / 2, this, level);
     if (result != undefined) {
+      const cell = result.cell;
+      const texture = getTexture(result.cell, result.face);
+      if (result.distance < 1 && isInteractive(cell) && isTextureStateful(texture)) {
+        for (const activator of cell.activators) {
+          activator(cell);
+        }
+      }
+
       // Target is an entrance...
       if (result.cell.type === CellType.ENTRANCE && result.distance < 1) {
         // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.

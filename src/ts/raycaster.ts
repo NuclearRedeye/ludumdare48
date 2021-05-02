@@ -7,10 +7,10 @@ import { CastResult } from './interfaces/raycaster';
 import { Face } from './enums.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
-import { getTexture, isSolid, isWall } from './utils/cell-utils.js';
+import { getTexture, isSolid } from './utils/cell-utils.js';
 import { getCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
-import { getTextureById, isTextureAnimated } from './utils/texture-utils.js';
+import { getTextureById, isTextureAnimated, isTextureStateful } from './utils/texture-utils.js';
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
@@ -71,18 +71,18 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
     if (sideDistanceX < sideDistanceY) {
       sideDistanceX += deltaDistanceX;
       mapX += stepX;
-      side = entity.dx < 0 ? Face.EAST : Face.WEST;
+      side = stepX < 0 ? Face.EAST : Face.WEST;
     } else {
       sideDistanceY += deltaDistanceY;
       mapY += stepY;
-      side = entity.dy > 0 ? Face.NORTH : Face.SOUTH;
+      side = stepY > 0 ? Face.NORTH : Face.SOUTH;
     }
 
     // Get the Cell that the ray has hit.
     const cell = getCell(level, mapX, mapY);
 
     // Check if the Cell is solid.
-    if (cell !== undefined && isSolid(cell) && isWall(cell)) {
+    if (cell !== undefined && isSolid(cell)) {
       // Calculate the distance from the ray's origin to the solid that was hit, and the specific point on the wall the ray hit.
       let distance = 0;
       let wall = 0;
@@ -237,10 +237,16 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       let wallX = Math.floor(result.wall * texture.width);
 
       // If the texture is animated, then calculate the X offset for the frame within the texture.
-      let texXAnimationOffset = 0;
+      let textureAnimationOffset = 0;
       if (isTextureAnimated(texture)) {
         const frame = getAnimationFrame();
-        texXAnimationOffset = frame * texture.width;
+        textureAnimationOffset = frame * texture.width;
+      }
+
+      // If the texture is stateful, then calculate the Y offset for the frame within the texture.
+      let textureStateOffset = 0;
+      if (isTextureStateful(texture)) {
+        textureStateOffset = (result.cell.state % texture.states) * texture.height;
       }
 
       // If the face of the wall is North or East then need to invert the X offset.
@@ -250,8 +256,8 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
 
       // The slice of the texture that we want to render to the framebuffer.
       const sourceRectangle: Rectangle = {
-        x: texXAnimationOffset + wallX,
-        y: 0,
+        x: textureAnimationOffset + wallX,
+        y: textureStateOffset,
         width: 1,
         height: texture.height
       };

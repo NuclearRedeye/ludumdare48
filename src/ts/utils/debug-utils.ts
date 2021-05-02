@@ -4,7 +4,7 @@ import { Face } from '../enums.js';
 
 // Function that gets a string representation of the specified Face
 export function faceToString(face: Face): string {
-  let retVal = 'UNKNOWN';
+  let retVal: string;
   switch (face) {
     case Face.NORTH:
       retVal = 'North';
@@ -17,6 +17,12 @@ export function faceToString(face: Face): string {
       break;
     case Face.WEST:
       retVal = 'West';
+      break;
+    case Face.TOP:
+      retVal = 'Ceiling';
+      break;
+    case Face.BOTTOM:
+      retVal = 'Floor';
       break;
   }
   return retVal;
