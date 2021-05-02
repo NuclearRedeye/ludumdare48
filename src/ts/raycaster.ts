@@ -7,8 +7,8 @@ import { CastResult } from './interfaces/raycaster';
 import { Face } from './enums.js';
 import { canvasWidth, canvasHeight } from './config.js';
 import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
-import { isSolid, isWall } from './utils/cell-utils.js';
-import { getCell, getTextureForCell } from './utils/level-utils.js';
+import { getTexture, isSolid, isWall } from './utils/cell-utils.js';
+import { getCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
 import { getTextureById, isTextureAnimated } from './utils/texture-utils.js';
 
@@ -170,7 +170,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
         if (!Number.isNaN(cellX) || !Number.isNaN(cellY) || isFinite(cellX) || isFinite(cellY)) {
           const cell = getCell(level, cellX, cellY);
           if (cell !== undefined) {
-            texture = getTextureById(cell.textureId);
+            texture = getTexture(cell, Face.BOTTOM);
           }
         }
 
@@ -231,7 +231,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       const wallY = -wallHeight / 2 + height / 2;
 
       // Get the texture for the solid cell.
-      const texture = getTextureForCell(result.cell);
+      const texture = getTexture(result.cell, result.face);
 
       // Calculate the X offset in the Texture for the slice that needs to be rendered.
       let wallX = Math.floor(result.wall * texture.width);

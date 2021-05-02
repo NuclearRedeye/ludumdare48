@@ -9,7 +9,9 @@ export enum Face {
   NORTH,
   EAST,
   SOUTH,
-  WEST
+  WEST,
+  TOP,
+  BOTTOM
 }
 
 export enum TextureState {
@@ -22,4 +24,9 @@ export enum TextureState {
 export enum TextureProperty {
   NONE = 0,
   ANIMATED = 1
+}
+
+export enum CellProperty {
+  NONE = 1,
+  SOLID = 2
 }

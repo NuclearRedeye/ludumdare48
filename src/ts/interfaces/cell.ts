@@ -1,9 +1,9 @@
-import { CellType } from '../enums';
 import { Activator } from './activator';
+import { CellProperty, CellType } from '../enums';
 
 export interface Cell {
   type: CellType;
-  textureId: number;
-  solid: boolean;
+  textureIds: number[];
   activators: Activator[];
+  properties: CellProperty; // Flags to store any special properties of the cell.
 }

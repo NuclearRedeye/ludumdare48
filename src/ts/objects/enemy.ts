@@ -51,12 +51,12 @@ export class Enemy implements Movable, Sprite {
 
     // Check for a collision on the X Axis
     const xCell = getCell(level, Math.floor(newX), Math.floor(this.y));
-    if (xCell !== undefined && isSolid(xCell) === false) {
+    if (xCell !== undefined && !isSolid(xCell)) {
       this.x = newX;
     }
     // Check for a collision on the Y Axis
     const yCell = getCell(level, Math.floor(this.x), Math.floor(newY));
-    if (yCell !== undefined && isSolid(yCell) === false) {
+    if (yCell !== undefined && !isSolid(yCell)) {
       this.y = newY;
     }
   }

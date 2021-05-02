@@ -22,7 +22,7 @@ function textureHasState(texture: Texture, state: TextureState): number {
   return texture.state & state;
 }
 
-// Checks if the texture is in the specified state.
+// Checks if the specified texture has the specified property
 function textureHasProperty(texture: Texture, property: TextureProperty): number {
   return texture.properties & property;
 }

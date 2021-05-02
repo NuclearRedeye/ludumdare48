@@ -8,6 +8,7 @@ import { fillLevelWithLoot, getCell } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 import { CellType } from './enums.js';
 import { getTextureById, loadTexture } from './utils/texture-utils.js';
+import { isSolid } from './utils/cell-utils.js';
 
 export enum states {
   STARTING,
@@ -39,23 +40,26 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
 
   // For each cell in the level, get the ID of the texture and then load the
   // FIXME: Should create an iterator for the level data. This will do for now.
-  const proimises: Promise<Texture>[] = [];
+  const promises: Promise<Texture>[] = [];
   for (let y = 0; y < level.data.length; y++) {
     for (let x = 0; x < level.data[0].length; x++) {
       const cell = level.data[y][x];
-      const texture = getTextureById(cell.textureId);
-      proimises.push(loadTexture(texture));
+      const textureIds = [...new Set(cell.textureIds)];
+      for (const textureId of textureIds) {
+        const texture = getTextureById(textureId);
+        promises.push(loadTexture(texture));
+      }
     }
   }
 
   // FIXME: Need to remove this once I fix the floor logic.
   if (level.floor) {
     const texture = getTextureById(level.floor);
-    proimises.push(loadTexture(texture));
+    promises.push(loadTexture(texture));
   }
 
   // Wait for all the Textures to load.
-  await Promise.all(proimises);
+  await Promise.all(promises);
 
   // Initialise and position Player
   let playerX = start.x;
@@ -65,7 +69,7 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
   for (let x = -1; x < 1; x++) {
     for (let y = -1; y < 1; y++) {
       const cell = getCell(level, playerX + x, playerY + y);
-      if (cell !== undefined && cell.type === CellType.FLOOR && cell.solid === false) {
+      if (cell !== undefined && cell.type === CellType.FLOOR && !isSolid(cell)) {
         playerX += x;
         playerY += y;
         break;

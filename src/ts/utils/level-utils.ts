@@ -1,9 +1,8 @@
 import { Cell } from '../interfaces/cell';
 import { Level } from '../interfaces/level';
-import { Texture } from '../interfaces/texture';
 
-import { textures } from '../data/textures/textures.js';
 import { Object } from '../objects/object.js';
+import { isSolid } from './cell-utils.js';
 
 function getRandomInt(minimum: number, maximum: number): number {
   return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
@@ -14,11 +13,6 @@ export function getCell(level: Level, x: number, y: number): Cell | undefined {
     return undefined;
   }
   return level.data[y][x];
-}
-
-export function getTextureForCell(cell: Cell): Texture {
-  // FIXME: Textures should be Indexed properly!
-  return textures[cell.textureId - 1];
 }
 
 export function getLevelName(level: Level): string {
@@ -33,7 +27,7 @@ export function fillLevelWithLoot(level: Level): void {
       const y = getRandomInt(1, level.data.length - 2);
 
       const cell = getCell(level, x, y);
-      if (cell !== undefined && cell.solid === false) {
+      if (cell !== undefined && !isSolid(cell)) {
         level.objects.push(new Object(x + 0.5, y + 0.5, level.loot, 0.2));
         ammount -= 1;
       }

@@ -1,6 +1,6 @@
 import { Level } from '../../interfaces/level';
 
-import { createFloor as f, createWall as w, createInvisibleWall as i } from '../../utils/cell-utils.js';
+import { createFloor as f, createSimpleWall as sw, createWall as w, createInvisibleWall as i } from '../../utils/cell-utils.js';
 
 export const level00: Level = {
   depth: 0,
@@ -17,16 +17,16 @@ export const level00: Level = {
   },
   floor: 2,
   data: [
-    [i(2), i(2), w(5), i(2), i(2), i(2), i(2), i(2), i(2), i(2)],
+    [i(2), i(2), sw(5), i(2), i(2), i(2), i(2), i(2), i(2), i(2)],
     [i(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), i(2)],
     [i(2), f(2), f(2), f(5), f(5), f(2), f(2), f(2), f(2), i(2)],
     [i(2), f(2), f(2), f(5), f(5), f(2), f(2), f(2), f(2), i(2)],
     [i(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), i(2)],
-    [w(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), w(2)],
-    [w(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), w(2)],
-    [w(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), w(2)],
-    [w(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), w(2)],
-    [w(1), w(1), w(5), w(1), w(1), w(2), w(2), w(2), w(2), w(2)]
+    [sw(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), sw(2)],
+    [sw(2), f(2), f(2), f(2), f(2), f(2), f(2), w([2, 5, 2, 5, 2, 2]), f(2), sw(2)],
+    [sw(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), sw(2)],
+    [sw(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), f(2), sw(2)],
+    [sw(1), sw(1), sw(5), sw(1), sw(1), sw(2), sw(2), sw(2), sw(2), sw(2)]
   ],
   objects: [],
   sprites: [],
