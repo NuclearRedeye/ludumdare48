@@ -4,7 +4,7 @@ import { Texture } from './interfaces/texture';
 
 import { Player } from './objects/player.js';
 import { sleep } from './utils/time-utils.js';
-import { fillLevelWithLoot, getCell } from './utils/level-utils.js';
+import { fillLevelWithLoot, getCell, getTextureIdsForLevel } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 import { CellType } from './enums.js';
 import { getTextureById, loadTexture } from './utils/texture-utils.js';
@@ -33,28 +33,18 @@ export function setGameState(state: number): void {
 export async function setCurrentLevel(level: Level, start: Portal): Promise<void> {
   setGameState(states.LOADING);
 
-  // Free the current levels resources
+  // FIXME: Should free any resources used by the current level
 
   // Update the current level
   currentLevel = level;
 
-  // For each cell in the level, get the ID of the texture and then load the
-  // FIXME: Should create an iterator for the level data. This will do for now.
-  const promises: Promise<Texture>[] = [];
-  for (let y = 0; y < level.data.length; y++) {
-    for (let x = 0; x < level.data[0].length; x++) {
-      const cell = level.data[y][x];
-      const textureIds = [...new Set(cell.textureIds)];
-      for (const textureId of textureIds) {
-        const texture = getTextureById(textureId);
-        promises.push(loadTexture(texture));
-      }
-    }
-  }
+  // Get the Textures used for the level.
+  const textureIds = getTextureIdsForLevel(level);
 
-  // FIXME: Need to remove this once I fix the floor logic.
-  if (level.floor) {
-    const texture = getTextureById(level.floor);
+  // Load the textures.
+  const promises: Promise<Texture>[] = [];
+  for (const textureId of textureIds) {
+    const texture = getTextureById(textureId);
     promises.push(loadTexture(texture));
   }
 
