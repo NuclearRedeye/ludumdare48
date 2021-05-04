@@ -138,7 +138,7 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
   const rayDirY1 = entity.dy + entity.cy;
 
   // For each row from the horizon to the bottom of the screen.
-  for (let y = 0; y < halfHeight; y++) {
+  for (let y = 1; y < halfHeight; y++) {
     // Calculate the distance from the camera to the floor for the current row.
     const rowDistance = halfHeight / y;
 
@@ -156,13 +156,6 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       // Calculate the X and Y coordinates of the specific cell.
       const cellX = Math.floor(floorX);
       const cellY = Math.floor(floorY);
-
-      // FIXME: There is probably a better solution to this, but avoid NaN and Infinity values.
-      if (!isFinite(cellX) || !isFinite(cellY)) {
-        floorX += floorStepX;
-        floorY += floorStepY;
-        continue;
-      }
 
       // Get the specific floor texture for the target cell.
       let texture;
