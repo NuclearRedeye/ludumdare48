@@ -81,28 +81,34 @@ export class Player implements Movable {
     if (result != undefined) {
       const cell = result.cell;
       const texture = getTexture(result.cell, result.face);
-      if (result.distance < 1 && isInteractive(cell) && isTextureStateful(texture)) {
-        for (const activator of cell.activators) {
-          activator(cell);
+      const reach = 1 + this.radius;
+
+      // Check we can reach the target.
+      if (result.distance < reach) {
+        // Target cell can be interacted with, and the specific face is stateful...
+        if (isInteractive(cell) && isTextureStateful(texture)) {
+          for (const activator of cell.activators) {
+            activator(cell);
+          }
         }
-      }
 
-      // Target is an entrance...
-      if (result.cell.type === CellType.ENTRANCE && result.distance < 1) {
-        // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
-        setTimeout(() => {
-          const newLevel = level.entrance.destination ? levels[level.entrance.destination] : levels[level.depth - 1];
-          setCurrentLevel(newLevel, newLevel.exit);
-        }, 0);
-      }
+        // Target is an entrance...
+        if (result.cell.type === CellType.ENTRANCE) {
+          // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
+          setTimeout(() => {
+            const newLevel = level.entrance.destination ? levels[level.entrance.destination] : levels[level.depth - 1];
+            setCurrentLevel(newLevel, newLevel.exit);
+          }, 0);
+        }
 
-      // Target is an exit...
-      if (result.cell.type === CellType.EXIT && result.distance < 1) {
-        // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
-        setTimeout(() => {
-          const newLevel = level.exit.destination ? levels[level.exit.destination] : levels[level.depth + 1];
-          setCurrentLevel(newLevel, newLevel.entrance);
-        }, 0);
+        // Target is an exit...
+        if (result.cell.type === CellType.EXIT) {
+          // FIXME: This is a temporary hack as this needs to be called outside of the animation loop.
+          setTimeout(() => {
+            const newLevel = level.exit.destination ? levels[level.exit.destination] : levels[level.depth + 1];
+            setCurrentLevel(newLevel, newLevel.entrance);
+          }, 0);
+        }
       }
     }
   }
