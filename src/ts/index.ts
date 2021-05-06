@@ -46,13 +46,13 @@ function update(elapsed: number): void {
     interactCooldown = 1000 / interactPerSecond;
   }
 
-  // Check Collisions, nothing moves at the moment so for now just player vs all objects...
+  // FIXME: Check Collisions, nothing moves at the moment so for now just player vs all objects...
   const level = getCurrentLevel();
   for (const object of level.objects) {
     if (object.active === false) {
       continue;
     }
-    if (checkEntityCollision(player, object)) {
+    if (checkEntityCollision(player, { ...object, radius: 0.1 })) {
       object.active = false;
       score += 100;
     }

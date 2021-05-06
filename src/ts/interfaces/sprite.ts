@@ -1,7 +1,9 @@
-import { Entity } from './entity';
-
-export interface Sprite extends Entity {
+export interface Sprite {
+  x: number;
+  y: number;
+  active: boolean;
   scale: number;
   textureId: number;
+  properties: number;
   distance?: number;
 }

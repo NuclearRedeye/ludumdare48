@@ -1,11 +1,10 @@
 import { Level } from '../interfaces/level';
 import { Movable } from '../interfaces/movable';
-import { Sprite } from '../interfaces/sprite';
 
 import { isSolid } from '../utils/cell-utils.js';
 import { getCell } from '../utils/level-utils.js';
 
-export class Enemy implements Movable, Sprite {
+export class Enemy implements Movable {
   x: number;
   y: number;
   dx: number;

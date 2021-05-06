@@ -27,6 +27,14 @@ export enum TextureProperties {
   STATEFUL = 2
 }
 
+export enum SpriteProperties {
+  NONE = 0,
+  TINT = 1,
+  ALIGN_TOP = 2,
+  ALIGN_BOTTOM = 4,
+  STATIC = 8
+}
+
 export enum CellProperties {
   NONE = 0,
   SOLID = 1,

@@ -4,7 +4,7 @@ import { Texture } from './interfaces/texture';
 
 import { Player } from './objects/player.js';
 import { sleep } from './utils/time-utils.js';
-import { fillLevelWithLoot, getCell, getTextureIdsForLevel } from './utils/level-utils.js';
+import { getCell, getTextureIdsForLevel } from './utils/level-utils.js';
 import { degreesToRadians } from './utils/math-utils.js';
 import { CellType } from './enums.js';
 import { getTextureById, loadTexture } from './utils/texture-utils.js';
@@ -69,11 +69,6 @@ export async function setCurrentLevel(level: Level, start: Portal): Promise<void
 
   player = new Player(playerX + 0.5, playerY + 0.5);
   player.rotate(degreesToRadians(start.angle));
-
-  // Is it the first time we have been to the level?
-  if (level.objects.length === 0) {
-    fillLevelWithLoot(level);
-  }
 
   // FIXME: Should time the load, and then sleep for the delta.
   await sleep(2000);
