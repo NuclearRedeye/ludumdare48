@@ -6,7 +6,7 @@ import { CastResult } from './interfaces/raycaster';
 
 import { Face } from './enums.js';
 import { canvasWidth, canvasHeight } from './config.js';
-import { drawGradient, drawTexture, drawTint } from './utils/canvas-utils.js';
+import { drawGradient, drawTexture, drawTexture2, drawTint } from './utils/canvas-utils.js';
 import { getTexture, isSolid } from './utils/cell-utils.js';
 import { getCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
@@ -253,19 +253,19 @@ export function renderSprite(context: CanvasRenderingContext2D, entity: Entity, 
 }
 
 // Function to render the specified level, from the perspective of the specified entity to the target canvas
-export function render(context: CanvasRenderingContext2D, entity: Entity, level: Level): void {
+export function render(frameBuffer: ImageData, entity: Entity, level: Level): void {
   const depthBuffer = new Array(columns).fill(50);
 
   // Draw the Ceiling
-  if (level.ceiling === undefined) {
-    drawGradient(context, { x: 0, y: 0 }, { x: width, y: halfHeight }, 'grey', 'black');
-  }
+  //if (level.ceiling === undefined) {
+  //  drawGradient(context, { x: 0, y: 0 }, { x: width, y: halfHeight }, 'grey', 'black');
+  //}
 
   // Draw the Floor
 
   // Create a temporary buffer for storing the floor data. This can then be copied to the framebuffer in a single draw operation.
   // FIXME: Don't re-allocate this buffer each function call by making it global.
-  const floor: ImageData = context.createImageData(width, halfHeight);
+  //const floor: ImageData = context.createImageData(width, halfHeight);
 
   // Calculate the X and Y positions for the leftmost ray, where x = 0, and the rightmost ray, where x = width.
   const rayDirX0 = entity.dx - entity.cx;
@@ -335,19 +335,19 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       };
 
       // Write that RGBA data into the correct location in the temporary floor data buffer.
-      const offset = 4 * (Math.floor(x) + Math.floor(y) * width);
-      floor.data[offset] = pixel.r;
-      floor.data[offset + 1] = pixel.g;
-      floor.data[offset + 2] = pixel.b;
-      floor.data[offset + 3] = pixel.a;
+      const offset = 4 * (Math.floor(x) + Math.floor(y + halfHeight) * width);
+      frameBuffer.data[offset] = pixel.r;
+      frameBuffer.data[offset + 1] = pixel.g;
+      frameBuffer.data[offset + 2] = pixel.b;
+      frameBuffer.data[offset + 3] = pixel.a;
     }
   }
 
   // Copy the data from the temporary floor data buffer to the framebuffer.
-  context.putImageData(floor, 0, halfHeight - 1);
+  //context.putImageData(floor, 0, halfHeight - 1);
 
   // FIXME: This is a lazy way to add some shading to the floor, would be better to do this when setting the pixel data in the buffer.
-  drawGradient(context, { x: 0, y: halfHeight - 1 }, { x: width, y: height }, 'rgba(0,0,0,180)', 'transparent');
+  //drawGradient(context, { x: 0, y: halfHeight - 1 }, { x: width, y: height }, 'rgba(0,0,0,180)', 'transparent');
 
   // Draw the Walls
   for (let column = 0; column < width; column++) {
@@ -406,10 +406,10 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       };
 
       // Draw the wall to the framebuffer.
-      drawTexture(context, texture, sourceRectangle, destinationRectange);
+      drawTexture2(frameBuffer, texture, sourceRectangle, destinationRectange);
 
       // Apply a darkened tint to the wall, based on its distance from the entity.
-      drawTint(context, destinationRectange, (wallHeight * 1.6) / height);
+      //drawTint(context, destinationRectange, (wallHeight * 1.6) / height);
     }
   }
 
@@ -435,6 +435,6 @@ export function render(context: CanvasRenderingContext2D, entity: Entity, level:
       continue;
     }
 
-    renderSprite(context, entity, depthBuffer, sprite);
+    //renderSprite(context, entity, depthBuffer, sprite);
   }
 }

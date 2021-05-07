@@ -41,6 +41,35 @@ export function drawTexture(context: CanvasRenderingContext2D, texture: Texture,
   context.drawImage(texture.canvas as HTMLCanvasElement, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
 }
 
+export function drawTexture2(target: ImageData, texture: Texture, source: Rectangle, destination: Rectangle): void {
+  // For each vertical pixel in the destination rectangle
+  for (let y = destination.y; y < destination.y + destination.height; y++) {
+    if (y < 0 || y >= target.height) {
+      continue;
+    }
+
+    // How much to increase the texture coordinate per screen pixel
+    const yOffset = (texture.height / destination.height) * (y - destination.y);
+
+    // Get the RGBA values for the specified pixel directly from the textures data buffer.
+    const sourceOffset = 4 * (source.x + source.y + Math.floor(yOffset) * texture.imageWidth);
+    const buffer = texture.buffer as Uint8ClampedArray;
+    const pixel = {
+      r: buffer[sourceOffset],
+      g: buffer[sourceOffset + 1],
+      b: buffer[sourceOffset + 2],
+      a: buffer[sourceOffset + 3]
+    };
+
+    // Write that RGBA data into the correct location in the temporary floor data buffer.
+    const offset = 4 * (destination.x + y * target.width);
+    target.data[offset] = pixel.r;
+    target.data[offset + 1] = pixel.g;
+    target.data[offset + 2] = pixel.b;
+    target.data[offset + 3] = pixel.a;
+  }
+}
+
 // Draws the specified texture as a Skybox at the specified location on the target canvas.
 export function drawSkybox(context: CanvasRenderingContext2D, start: Point, end: Point, texturePositionX: number, texture: Texture): void {
   // FIXME: height should not be hardcoded here!

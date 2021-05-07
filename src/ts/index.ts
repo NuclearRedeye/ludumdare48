@@ -10,6 +10,7 @@ import { getLevelName } from './utils/level-utils.js';
 // Globals
 let canvas: HTMLCanvasElement;
 let context: CanvasRenderingContext2D;
+let frameBuffer: ImageData;
 
 // States
 let pause: boolean = false;
@@ -67,6 +68,7 @@ function onTick(timestamp: number): void {
 
     // Clear the Canvas, although no real need as we will be drawing over every pixel.
     context.clearRect(0, 0, canvasWidth, canvasHeight);
+    frameBuffer = context.createImageData(canvasWidth, canvasHeight);
 
     switch (getGameState()) {
       case states.LOADING:
@@ -81,7 +83,8 @@ function onTick(timestamp: number): void {
 
       case states.LOADED:
         update(getDelta());
-        render(context, getPlayer(), getCurrentLevel());
+        render(frameBuffer, getPlayer(), getCurrentLevel());
+        context.putImageData(frameBuffer, 0, 0);
         context.font = '24px serif';
         context.textBaseline = 'top';
         context.fillStyle = 'white';
@@ -176,7 +179,7 @@ window.onload = function (): void {
   canvas = document.createElement('canvas') as HTMLCanvasElement;
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
-  context = canvas.getContext('2d', { alpha: false }) as CanvasRenderingContext2D;
+  context = canvas.getContext('2d') as CanvasRenderingContext2D;
   context.imageSmoothingEnabled = false;
   document.body.appendChild(canvas);
   document.body.appendChild(createTextElement('Created by NuclearRedeye'));
