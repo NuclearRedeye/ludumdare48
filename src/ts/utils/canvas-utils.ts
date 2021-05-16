@@ -41,14 +41,18 @@ export function drawTexture(context: CanvasRenderingContext2D, texture: Texture,
   context.drawImage(texture.canvas as HTMLCanvasElement, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
 }
 
+// Draws the specified texture at the specified location in the target buffer.
 export function drawTexture2(target: ImageData, texture: Texture, source: Rectangle, destination: Rectangle): void {
-
-  // Only draw the specific pixels that will be visible on the screen.
+  // Calculate how many pixels we need to draw, culling any that fall outside of the viewport. We should never draw more than the height of the framebuffer.
   const until = destination.height > target.height ? target.height : destination.height;
-  const destYOffset = destination.y < 0 ? 0 : destination.y;
+
+  // Calculate the addtional vertical offset in the framebuffer needed to correct for any culled pixels.
+  const targetYOffset = destination.y < 0 ? 0 : destination.y;
+
+  // Calculate the addtional vertical offset in the Texture needed to correct for any culled pixels.
   const texYOffset = destination.y < 0 ? Math.abs(destination.y) : 0;
 
-  // For each vertical pixel in the destination rectangle
+  // For each visible vertical pixel
   for (let y = 0; y < until; y++) {
     // How much to increase the texture coordinate per screen pixel
     const yOffset = (texture.height / destination.height) * (texYOffset + y);
@@ -64,7 +68,7 @@ export function drawTexture2(target: ImageData, texture: Texture, source: Rectan
     };
 
     // Write that RGBA data into the correct location in the temporary floor data buffer.
-    const offset = 4 * (Math.floor(destination.x) + Math.floor(destYOffset + y) * target.width);
+    const offset = 4 * (Math.floor(destination.x) + Math.floor(targetYOffset + y) * target.width);
     target.data[offset] = pixel.r;
     target.data[offset + 1] = pixel.g;
     target.data[offset + 2] = pixel.b;
