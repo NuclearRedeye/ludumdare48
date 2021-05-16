@@ -363,7 +363,8 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       const wallHeight = Math.abs(Math.floor(height / result.distance));
 
       // Calculate the position on the Y axis of the viewport to start drawing the wall from.
-      const wallY = -wallHeight / 2 + height / 2;
+      // FIXME: When support for Ceiling Casting is added, this extra + 1 might be the cause of a slight offset issue.
+      const wallY = -wallHeight / 2 + height / 2 + 1;
 
       // Get the texture for the solid cell.
       const texture = getTexture(result.cell, result.face);
