@@ -58,7 +58,7 @@ export function drawTexture2(target: ImageData, texture: Texture, source: Rectan
     };
 
     // Write that RGBA data into the correct location in the temporary floor data buffer.
-    const offset = 4 * (Math.floor(destination.x) + Math.floor(destination.y + y) * canvasWidth);
+    const offset = 4 * (Math.floor(destination.x) + Math.floor(destination.y + y) * target.width);
     target.data[offset] = pixel.r;
     target.data[offset + 1] = pixel.g;
     target.data[offset + 2] = pixel.b;
