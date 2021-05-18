@@ -1,6 +1,9 @@
 import { Colour } from '../interfaces/colour';
 import { Rectangle } from '../interfaces/rectangle';
+import { Shader } from '../interfaces/shader';
 import { Texture } from '../interfaces/texture';
+
+import { applyShade } from './colour-utils.js';
 
 const bytesPerPixel = 4;
 
@@ -20,7 +23,7 @@ export function drawPixel(frameBuffer: ImageData, x: number, y: number, colour: 
 }
 
 // Draws the specified texture at the specified location in the target buffer.
-export function drawTexture(target: ImageData, texture: Texture, source: Rectangle, destination: Rectangle): void {
+export function drawTexture(target: ImageData, texture: Texture, source: Rectangle, destination: Rectangle, distance: number, shaders: Shader[] = []): void {
   // Calculate how many pixels we need to draw, culling any that fall outside of the viewport. We should never draw more than the height of the framebuffer.
   const drawYStart = destination.y < 0 ? 0 : destination.y;
   const drawYEnd = destination.y + destination.height > target.height ? target.height : destination.y + destination.height;
@@ -37,12 +40,19 @@ export function drawTexture(target: ImageData, texture: Texture, source: Rectang
     // Get the RGBA values for the specified pixel directly from the textures data buffer.
     const sourceOffset = 4 * (source.x + (source.y + Math.floor(yOffset)) * texture.imageWidth);
     const buffer = texture.buffer as Uint8ClampedArray;
-    const pixel: Colour = {
+    let pixel: Colour = {
       red: buffer[sourceOffset],
       green: buffer[sourceOffset + 1],
       blue: buffer[sourceOffset + 2],
       alpha: buffer[sourceOffset + 3]
     };
+
+    pixel = applyShade(pixel, distance);
+
+    // Apply any shaders to the pixel
+    for (const shader of shaders) {
+      pixel = shader(pixel);
+    }
 
     // Draw the pixel data to the supplied buffer
     drawPixel(target, Math.floor(destination.x), Math.floor(drawYStart + y), pixel);

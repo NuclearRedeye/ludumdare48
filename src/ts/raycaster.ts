@@ -14,6 +14,7 @@ import { getAnimationFrame } from './utils/time-utils.js';
 import { getTextureById, isTextureAnimated, isTextureStateful } from './utils/texture-utils.js';
 import { isSpriteAlignedBottom, isSpriteAlignedTop, isSpriteStatic, isSpriteTinted } from './utils/sprite-utils.js';
 import { radiansToDegrees } from './utils/math-utils.js';
+import { applyShade } from './utils/colour-utils.js';
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
@@ -243,12 +244,7 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
       };
 
       // Draw the sprite to the screen.
-      drawTexture(frameBuffer, texture, sourceRectangle, destinationRectange);
-
-      // Apply a darkened tint to the sprite, based on its distance from the entity.
-      //if (isSpriteTinted(sprite)) {
-      //  drawTint(fr, destinationRectange, ((height / (sprite.distance || 0)) * 1.6) / height);
-      //}
+      drawTexture(frameBuffer, texture, sourceRectangle, destinationRectange, sprite.distance as number);
     }
   }
 }
@@ -263,10 +259,6 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
   //}
 
   // Draw the Floor
-
-  // Create a temporary buffer for storing the floor data. This can then be copied to the framebuffer in a single draw operation.
-  // FIXME: Don't re-allocate this buffer each function call by making it global.
-  //const floor: ImageData = context.createImageData(width, halfHeight);
 
   // Calculate the X and Y positions for the leftmost ray, where x = 0, and the rightmost ray, where x = width.
   const rayDirX0 = entity.dx - entity.cx;
@@ -328,22 +320,18 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       // Get the RGBA values for the specified pixel directly from the textures data buffer.
       const sourceOffset = 4 * (texXAnimationOffset + tx + ty * texture.imageWidth);
       const buffer = texture.buffer as Uint8ClampedArray;
-      const pixel: Colour = {
+      let pixel: Colour = {
         red: buffer[sourceOffset],
         green: buffer[sourceOffset + 1],
         blue: buffer[sourceOffset + 2],
         alpha: buffer[sourceOffset + 3]
       };
 
+      pixel = applyShade(pixel, rowDistance);
+
       drawPixel(frameBuffer, Math.floor(x), Math.floor(y + halfHeight), pixel);
     }
   }
-
-  // Copy the data from the temporary floor data buffer to the framebuffer.
-  //context.putImageData(floor, 0, halfHeight - 1);
-
-  // FIXME: This is a lazy way to add some shading to the floor, would be better to do this when setting the pixel data in the buffer.
-  //drawGradient(context, { x: 0, y: halfHeight - 1 }, { x: width, y: height }, 'rgba(0,0,0,180)', 'transparent');
 
   // Draw the Walls
   for (let column = 0; column < width; column++) {
@@ -403,10 +391,7 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       };
 
       // Draw the wall to the framebuffer.
-      drawTexture(frameBuffer, texture, sourceRectangle, destinationRectange);
-
-      // Apply a darkened tint to the wall, based on its distance from the entity.
-      //drawTint(context, destinationRectange, (wallHeight * 1.6) / height);
+      drawTexture(frameBuffer, texture, sourceRectangle, destinationRectange, result.distance);
     }
   }
 
