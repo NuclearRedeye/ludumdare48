@@ -136,10 +136,10 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
   const spriteScreenX = Math.floor((width / 2) * (1 + transformX / transformY));
 
   // Calculate the height of the sprite.
-  const spriteHeight = Math.abs(Math.floor(height / transformY)) * sprite.scale;
+  const spriteHeight = Math.abs(Math.round(Math.floor(height / transformY) * sprite.scale));
 
   // Calculate the width of the sprite.
-  const spriteWidth = Math.abs(Math.floor(height / transformY)) * sprite.scale;
+  const spriteWidth = Math.abs(Math.round(Math.floor(height / transformY) * sprite.scale));
 
   // Calculate where to start drawing the sprite on the Y Axis.
   let drawStartY = Math.floor(-spriteHeight / 2 + height / 2);
@@ -176,9 +176,9 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
   // Calculate the vertical offset which enables vertical alignment of the sprite to the floor or ceiling.
   let drawStartYOffset = 0;
   if (isSpriteAlignedTop(sprite)) {
-    drawStartYOffset = -Math.floor(256 / transformY) + spriteHeight / 2;
+    drawStartYOffset = -Math.floor(256 / transformY) + Math.round(spriteHeight / 2);
   } else if (isSpriteAlignedBottom(sprite)) {
-    drawStartYOffset = Math.floor(256 / transformY) - spriteHeight / 2;
+    drawStartYOffset = Math.floor(256 / transformY) - Math.round(spriteHeight / 2);
   }
 
   // Then, for each column draw a vertical strip of the sprite.
