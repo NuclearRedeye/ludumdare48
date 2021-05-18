@@ -135,24 +135,24 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
   const transformY = invDet * (-entity.cy * spriteX + entity.cx * spriteY);
 
   // The X position of the sprite
-  const spriteScreenX = Math.floor((width / 2) * (1 + transformX / transformY));
+  const spriteScreenX = Math.floor((frameBuffer.width / 2) * (1 + transformX / transformY));
 
   // Calculate the height of the sprite.
-  const spriteHeight = Math.abs(Math.round(Math.floor(height / transformY) * sprite.scale));
+  const spriteHeight = Math.abs(Math.round(Math.floor(frameBuffer.height / transformY) * sprite.scale));
 
   // Calculate the width of the sprite.
-  const spriteWidth = Math.abs(Math.round(Math.floor(height / transformY) * sprite.scale));
+  const spriteWidth = Math.abs(Math.round(Math.floor(frameBuffer.height / transformY) * sprite.scale));
 
   // Calculate where to start drawing the sprite on the Y Axis.
-  let drawStartY = Math.floor(-spriteHeight / 2 + height / 2);
+  let drawStartY = Math.floor(-spriteHeight / 2 + frameBuffer.height / 2);
   if (drawStartY < 0) {
     drawStartY = 0;
   }
 
   // Calculate where to stop drawing the sprite on the Y Axis.
-  let drawEndY = Math.floor(spriteHeight / 2 + height / 2);
-  if (drawEndY >= height) {
-    drawEndY = height;
+  let drawEndY = Math.floor(spriteHeight / 2 + frameBuffer.height / 2);
+  if (drawEndY >= frameBuffer.height) {
+    drawEndY = frameBuffer.height;
   }
 
   // Calculate where to start drawing the sprite on the X Axis. Aka the column of the screen to start at.
@@ -168,11 +168,11 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
   }
 
   // Calculate the Y offset within the texture to start drawing from.
-  const texStartYD = drawStartY * 256 - height * 128 + spriteHeight * 128;
+  const texStartYD = drawStartY * 256 - frameBuffer.height * 128 + spriteHeight * 128;
   const texStartY = Math.round((texStartYD * texture.height) / spriteHeight / 256);
 
   // Calculate the Y offset withing the texture to stop drawing from.
-  const texEndYD = (drawEndY - 1) * 256 - height * 128 + spriteHeight * 128;
+  const texEndYD = (drawEndY - 1) * 256 - frameBuffer.height * 128 + spriteHeight * 128;
   const texEndY = Math.round((texEndYD * texture.height) / spriteHeight / 256);
 
   // Calculate the vertical offset which enables vertical alignment of the sprite to the floor or ceiling.
@@ -348,7 +348,7 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
 
       // Calculate the position on the Y axis of the viewport to start drawing the wall from.
       // FIXME: When support for Ceiling Casting is added, this extra + 1 might be the cause of a slight offset issue.
-      const wallY = -wallHeight / 2 + height / 2 + 1;
+      const wallY = -wallHeight / 2 + frameBuffer.height / 2 + 1;
 
       // Get the texture for the solid cell.
       const texture = getTexture(result.cell, result.face);
