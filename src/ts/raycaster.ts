@@ -6,7 +6,7 @@ import { CastResult } from './interfaces/raycaster';
 
 import { Face } from './enums.js';
 import { canvasWidth, canvasHeight } from './config.js';
-import { drawGradient, drawTexture, drawTexture2, drawTint } from './utils/canvas-utils.js';
+import { drawTexture } from './utils/drawing-utils.js';
 import { getTexture, isSolid } from './utils/cell-utils.js';
 import { getCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
@@ -242,8 +242,7 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
       };
 
       // Draw the sprite to the screen.
-      //drawTexture(context, texture, sourceRectangle, destinationRectange);
-      drawTexture2(frameBuffer, texture, sourceRectangle, destinationRectange);
+      drawTexture(frameBuffer, texture, sourceRectangle, destinationRectange);
 
       // Apply a darkened tint to the sprite, based on its distance from the entity.
       //if (isSpriteTinted(sprite)) {
@@ -408,7 +407,7 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       };
 
       // Draw the wall to the framebuffer.
-      drawTexture2(frameBuffer, texture, sourceRectangle, destinationRectange);
+      drawTexture(frameBuffer, texture, sourceRectangle, destinationRectange);
 
       // Apply a darkened tint to the wall, based on its distance from the entity.
       //drawTint(context, destinationRectange, (wallHeight * 1.6) / height);
