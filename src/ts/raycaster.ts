@@ -15,7 +15,6 @@ import { getTextureById, isTextureAnimated, isTextureStateful } from './utils/te
 import { isSpriteAlignedBottom, isSpriteAlignedTop, isSpriteStatic, isSpriteTinted } from './utils/sprite-utils.js';
 import { radiansToDegrees } from './utils/math-utils.js';
 
-
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
 const height = canvasHeight; // The height, in pixels, of the screen.
