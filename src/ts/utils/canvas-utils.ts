@@ -66,12 +66,15 @@ export function drawTexture2(target: ImageData, texture: Texture, source: Rectan
       a: buffer[sourceOffset + 3]
     };
 
-    // Write that RGBA data into the correct location in the temporary floor data buffer.
-    const offset = 4 * (Math.floor(destination.x) + Math.floor(drawYStart + y) * target.width);
-    target.data[offset] = pixel.r;
-    target.data[offset + 1] = pixel.g;
-    target.data[offset + 2] = pixel.b;
-    target.data[offset + 3] = pixel.a;
+    // Only draw the pixel to the framebuffer if it is visible.
+    if (pixel.a > 0) {
+      // Write that RGBA data into the correct location in the temporary floor data buffer.
+      const offset = 4 * (Math.floor(destination.x) + Math.floor(drawYStart + y) * target.width);
+      target.data[offset] = pixel.r;
+      target.data[offset + 1] = pixel.g;
+      target.data[offset + 2] = pixel.b;
+      target.data[offset + 3] = pixel.a;
+    }
   }
 }
 
