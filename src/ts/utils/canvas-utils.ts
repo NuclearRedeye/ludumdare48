@@ -44,12 +44,11 @@ export function drawTexture(context: CanvasRenderingContext2D, texture: Texture,
 // Draws the specified texture at the specified location in the target buffer.
 export function drawTexture2(target: ImageData, texture: Texture, source: Rectangle, destination: Rectangle): void {
   // Calculate how many pixels we need to draw, culling any that fall outside of the viewport. We should never draw more than the height of the framebuffer.
-  const until = destination.height > target.height ? target.height : destination.height;
+  const drawYStart = destination.y < 0 ? 0 : destination.y;
+  const drawYEnd = destination.y + destination.height > target.height ? target.height : destination.y + destination.height;
+  const until = drawYEnd - drawYStart;
 
-  // Calculate the addtional vertical offset in the framebuffer needed to correct for any culled pixels.
-  const targetYOffset = destination.y < 0 ? 0 : destination.y;
-
-  // Calculate the addtional vertical offset in the Texture needed to correct for any culled pixels.
+  // Calculate the vertical offset in the Texture needed to correct for any culled pixels.
   const texYOffset = destination.y < 0 ? Math.abs(destination.y) : 0;
 
   // For each visible vertical pixel
@@ -68,7 +67,7 @@ export function drawTexture2(target: ImageData, texture: Texture, source: Rectan
     };
 
     // Write that RGBA data into the correct location in the temporary floor data buffer.
-    const offset = 4 * (Math.floor(destination.x) + Math.floor(targetYOffset + y) * target.width);
+    const offset = 4 * (Math.floor(destination.x) + Math.floor(drawYStart + y) * target.width);
     target.data[offset] = pixel.r;
     target.data[offset + 1] = pixel.g;
     target.data[offset + 2] = pixel.b;
