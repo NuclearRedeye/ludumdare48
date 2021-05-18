@@ -119,7 +119,7 @@ export function castRay(column: number, entity: Entity, level: Level, maxDepth: 
 }
 
 // Function to render the specifed sprite, from the perspective of the specified entiry, to the specified canvas.
-export function renderSprite(context: CanvasRenderingContext2D, entity: Entity, depthBuffer: number[], sprite: Sprite): void {
+export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer: number[], sprite: Sprite): void {
   // Get the texture for the sprite
   const texture = getTextureById(sprite.textureId);
 
@@ -167,11 +167,11 @@ export function renderSprite(context: CanvasRenderingContext2D, entity: Entity, 
 
   // Calculate the Y offset within the texture to start drawing from.
   const texStartYD = drawStartY * 256 - height * 128 + spriteHeight * 128;
-  const texStartY = (texStartYD * texture.height) / spriteHeight / 256;
+  const texStartY = Math.round((texStartYD * texture.height) / spriteHeight / 256);
 
   // Calculate the Y offset withing the texture to stop drawing from.
   const texEndYD = (drawEndY - 1) * 256 - height * 128 + spriteHeight * 128;
-  const texEndY = (texEndYD * texture.height) / spriteHeight / 256;
+  const texEndY = Math.round((texEndYD * texture.height) / spriteHeight / 256);
 
   // Calculate the vertical offset which enables vertical alignment of the sprite to the floor or ceiling.
   let drawStartYOffset = 0;
@@ -242,12 +242,13 @@ export function renderSprite(context: CanvasRenderingContext2D, entity: Entity, 
       };
 
       // Draw the sprite to the screen.
-      drawTexture(context, texture, sourceRectangle, destinationRectange);
+      //drawTexture(context, texture, sourceRectangle, destinationRectange);
+      drawTexture2(frameBuffer, texture, sourceRectangle, destinationRectange);
 
       // Apply a darkened tint to the sprite, based on its distance from the entity.
-      if (isSpriteTinted(sprite)) {
-        drawTint(context, destinationRectange, ((height / (sprite.distance || 0)) * 1.6) / height);
-      }
+      //if (isSpriteTinted(sprite)) {
+      //  drawTint(fr, destinationRectange, ((height / (sprite.distance || 0)) * 1.6) / height);
+      //}
     }
   }
 }
@@ -436,6 +437,6 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       continue;
     }
 
-    //renderSprite(context, entity, depthBuffer, sprite);
+    renderSprite(frameBuffer, entity, depthBuffer, sprite);
   }
 }
