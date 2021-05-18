@@ -1,5 +1,23 @@
+import { Colour } from '../interfaces/colour';
 import { Rectangle } from '../interfaces/rectangle';
 import { Texture } from '../interfaces/texture';
+
+const bytesPerPixel = 4;
+
+// Draws the specified pixel at the specified location in the target buffer.
+export function drawPixel(frameBuffer: ImageData, x: number, y: number, colour: Colour): void {
+  // Make sure the pixel is visible.
+  if (colour.alpha > 0) {
+    // Calculate the offset in the buffer for the specified pixel.
+    const offset = bytesPerPixel * (x + y * frameBuffer.width);
+
+    // Set the data in the buffer to the specified RGBA values.
+    frameBuffer.data[offset] = colour.red;
+    frameBuffer.data[offset + 1] = colour.green;
+    frameBuffer.data[offset + 2] = colour.blue;
+    frameBuffer.data[offset + 3] = colour.alpha;
+  }
+}
 
 // Draws the specified texture at the specified location in the target buffer.
 export function drawTexture(target: ImageData, texture: Texture, source: Rectangle, destination: Rectangle): void {
@@ -19,21 +37,14 @@ export function drawTexture(target: ImageData, texture: Texture, source: Rectang
     // Get the RGBA values for the specified pixel directly from the textures data buffer.
     const sourceOffset = 4 * (source.x + (source.y + Math.floor(yOffset)) * texture.imageWidth);
     const buffer = texture.buffer as Uint8ClampedArray;
-    const pixel = {
-      r: buffer[sourceOffset],
-      g: buffer[sourceOffset + 1],
-      b: buffer[sourceOffset + 2],
-      a: buffer[sourceOffset + 3]
+    const pixel: Colour = {
+      red: buffer[sourceOffset],
+      green: buffer[sourceOffset + 1],
+      blue: buffer[sourceOffset + 2],
+      alpha: buffer[sourceOffset + 3]
     };
 
-    // Only draw the pixel to the framebuffer if it is visible.
-    if (pixel.a > 0) {
-      // Write that RGBA data into the correct location in the temporary floor data buffer.
-      const offset = 4 * (Math.floor(destination.x) + Math.floor(drawYStart + y) * target.width);
-      target.data[offset] = pixel.r;
-      target.data[offset + 1] = pixel.g;
-      target.data[offset + 2] = pixel.b;
-      target.data[offset + 3] = pixel.a;
-    }
+    // Draw the pixel data to the supplied buffer
+    drawPixel(target, Math.floor(destination.x), Math.floor(drawYStart + y), pixel);
   }
 }
