@@ -1,3 +1,4 @@
+import { Colour } from './interfaces/colour';
 import { Entity } from './interfaces/entity';
 import { Sprite } from './interfaces/sprite';
 import { Level } from './interfaces/level';
@@ -6,13 +7,14 @@ import { CastResult } from './interfaces/raycaster';
 
 import { Face } from './enums.js';
 import { canvasWidth, canvasHeight } from './config.js';
-import { drawTexture } from './utils/drawing-utils.js';
+import { drawPixel, drawTexture } from './utils/drawing-utils.js';
 import { getTexture, isSolid } from './utils/cell-utils.js';
 import { getCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
 import { getTextureById, isTextureAnimated, isTextureStateful } from './utils/texture-utils.js';
 import { isSpriteAlignedBottom, isSpriteAlignedTop, isSpriteStatic, isSpriteTinted } from './utils/sprite-utils.js';
 import { radiansToDegrees } from './utils/math-utils.js';
+
 
 // FIXME: These should be in a config object or similar
 const width = canvasWidth; // The width, in pixels, of the screen.
@@ -327,19 +329,14 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       // Get the RGBA values for the specified pixel directly from the textures data buffer.
       const sourceOffset = 4 * (texXAnimationOffset + tx + ty * texture.imageWidth);
       const buffer = texture.buffer as Uint8ClampedArray;
-      const pixel = {
-        r: buffer[sourceOffset],
-        g: buffer[sourceOffset + 1],
-        b: buffer[sourceOffset + 2],
-        a: buffer[sourceOffset + 3]
+      const pixel: Colour = {
+        red: buffer[sourceOffset],
+        green: buffer[sourceOffset + 1],
+        blue: buffer[sourceOffset + 2],
+        alpha: buffer[sourceOffset + 3]
       };
 
-      // Write that RGBA data into the correct location in the temporary floor data buffer.
-      const offset = 4 * (Math.floor(x) + Math.floor(y + halfHeight) * width);
-      frameBuffer.data[offset] = pixel.r;
-      frameBuffer.data[offset + 1] = pixel.g;
-      frameBuffer.data[offset + 2] = pixel.b;
-      frameBuffer.data[offset + 3] = pixel.a;
+      drawPixel(frameBuffer, Math.floor(x), Math.floor(y + halfHeight), pixel);
     }
   }
 
