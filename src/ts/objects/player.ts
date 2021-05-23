@@ -77,7 +77,7 @@ export class Player implements Movable {
   }
 
   interact(level: Level): void {
-    const result = castRay(canvasWidth / 2, this, level);
+    const result = castRay(canvasWidth, canvasWidth / 2, this, level);
     if (result != undefined) {
       const cell = result.cell;
       const texture = getTexture(result.cell, result.face);

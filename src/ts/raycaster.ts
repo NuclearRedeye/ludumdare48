@@ -6,25 +6,18 @@ import { Rectangle } from './interfaces/rectangle';
 import { CastResult } from './interfaces/raycaster';
 
 import { Face } from './enums.js';
-import { canvasWidth, canvasHeight } from './config.js';
 import { drawPixel, drawTexture } from './utils/drawing-utils.js';
 import { getTexture, isSolid } from './utils/cell-utils.js';
 import { getCell } from './utils/level-utils.js';
 import { getAnimationFrame } from './utils/time-utils.js';
 import { getTextureById, isTextureAnimated, isTextureStateful } from './utils/texture-utils.js';
-import { isSpriteAlignedBottom, isSpriteAlignedTop, isSpriteStatic, isSpriteTinted } from './utils/sprite-utils.js';
+import { isSpriteAlignedBottom, isSpriteAlignedTop, isSpriteStatic } from './utils/sprite-utils.js';
 import { radiansToDegrees } from './utils/math-utils.js';
 import { applyShade } from './utils/colour-utils.js';
 
-// FIXME: These should be in a config object or similar
-const width = canvasWidth; // The width, in pixels, of the screen.
-const height = canvasHeight; // The height, in pixels, of the screen.
-const halfHeight = height / 2; // Half the height of the screen, in pixels.
-const columns = width; // The number of columns in the viewport, or basically the number or Rays to cast.
-
 // Derived from https://lodev.org/cgtutor/raycasting.html.
 // Casts a ray from the specified point at the specified angle and returns the first Wall the ray impacts.
-export function castRay(column: number, entity: Entity, level: Level, maxDepth: number = 50): CastResult | undefined {
+export function castRay(width: number, column: number, entity: Entity, level: Level, maxDepth: number = 50): CastResult | undefined {
   const camera = (2 * column) / width - 1;
   const rayDirectionX = entity.dx + entity.cx * camera;
   const rayDirectionY = entity.dy + entity.cy * camera;
@@ -163,8 +156,8 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
 
   // Calculate where to stop drawing the sprite on the X Axis. Aka the column of the screen to end at.
   let drawEndX = Math.floor(spriteHeight / 2 + spriteScreenX);
-  if (drawEndX >= width) {
-    drawEndX = width;
+  if (drawEndX >= frameBuffer.width) {
+    drawEndX = frameBuffer.width;
   }
 
   // Calculate the Y offset within the texture to start drawing from.
@@ -176,6 +169,7 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
   const texEndY = Math.round((texEndYD * texture.height) / spriteHeight / 256);
 
   // Calculate the vertical offset which enables vertical alignment of the sprite to the floor or ceiling.
+  // FIXME: This isn't working correctly at other resolutions.
   let drawStartYOffset = 0;
   if (isSpriteAlignedTop(sprite)) {
     drawStartYOffset = -Math.floor(256 / transformY) + Math.round(spriteHeight / 2);
@@ -190,7 +184,7 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
     // - It's not off the left edge of the viewport.
     // - It's not off the right edge of the viewport.
     // - It's not too far away or hidden behind another solid that has already been rendered.
-    if (transformY > 0 && column >= 0 && column < width && transformY < depthBuffer[column]) {
+    if (transformY > 0 && column >= 0 && column < frameBuffer.width && transformY < depthBuffer[column]) {
       // Calculate the X offset within the texture to start drawing from.
       let texX = Math.floor((256 * (column - (-spriteWidth / 2 + spriteScreenX)) * texture.width) / spriteWidth / 256);
 
@@ -251,7 +245,8 @@ export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer
 
 // Function to render the specified level, from the perspective of the specified entity to the target canvas
 export function render(frameBuffer: ImageData, entity: Entity, level: Level): void {
-  const depthBuffer = new Array(columns).fill(50);
+  const halfHeight = frameBuffer.height / 2;
+  const depthBuffer = new Array(frameBuffer.width).fill(50);
 
   // Draw the Ceiling
   //if (level.ceiling === undefined) {
@@ -273,15 +268,15 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
 
     // Calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    const floorStepX = (rowDistance * (rayDirX1 - rayDirX0)) / width;
-    const floorStepY = (rowDistance * (rayDirY1 - rayDirY0)) / width;
+    const floorStepX = (rowDistance * (rayDirX1 - rayDirX0)) / frameBuffer.width;
+    const floorStepY = (rowDistance * (rayDirY1 - rayDirY0)) / frameBuffer.width;
 
     // Calculate the X and Y coordinates of the leftmost column.
     let floorX = entity.x + rowDistance * rayDirX0;
     let floorY = entity.y + rowDistance * rayDirY0;
 
     // For each pixel in the row.
-    for (let x = 0; x < width; x++) {
+    for (let x = 0; x < frameBuffer.width; x++) {
       // Calculate the X and Y coordinates of the specific cell.
       const cellX = Math.floor(floorX);
       const cellY = Math.floor(floorY);
@@ -334,9 +329,9 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
   }
 
   // Draw the Walls
-  for (let column = 0; column < width; column++) {
+  for (let column = 0; column < frameBuffer.width; column++) {
     // Get the first solid cell this ray hits.
-    const result = castRay(column, entity, level);
+    const result = castRay(frameBuffer.width, column, entity, level);
 
     // FIXME: Should draw something when no solid is found within the maximum range.
     if (result !== undefined) {
@@ -344,7 +339,7 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
       depthBuffer[column] = result.distance;
 
       // Calculate the height the wall should be rendered at from the distance from the entity.
-      const wallHeight = Math.abs(Math.floor(height / result.distance));
+      const wallHeight = Math.abs(Math.floor(frameBuffer.height / result.distance));
 
       // Calculate the position on the Y axis of the viewport to start drawing the wall from.
       // FIXME: When support for Ceiling Casting is added, this extra + 1 might be the cause of a slight offset issue.
@@ -403,8 +398,7 @@ export function render(frameBuffer: ImageData, entity: Entity, level: Level): vo
 
   // Sort sprites from far to close
   sprites.sort((a, b) => {
-    // FIXME: Possivly undefined
-    return (b.distance || 0) - (a.distance || 0);
+    return (b.distance ?? 0) - (a.distance ?? 0);
   });
 
   //after sorting the sprites, do the projection and draw them
