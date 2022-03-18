@@ -113,7 +113,7 @@ export function castRay(width: number, column: number, entity: Entity, level: Le
   return undefined;
 }
 
-// Function to render the specifed sprite, from the perspective of the specified entiry, to the specified canvas.
+// Function to render the specifed sprite, from the perspective of the specified entity, to the specified canvas.
 export function renderSprite(frameBuffer: ImageData, entity: Entity, depthBuffer: number[], sprite: Sprite): void {
   // Get the texture for the sprite
   const texture = getTextureById(sprite.textureId);
